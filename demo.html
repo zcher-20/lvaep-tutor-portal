@@ -20,41 +20,88 @@
     .type-sa    { background:#ffe4e6; color:#9f1239; }
     .type-h     { background:#d1fae5; color:#065f46; }
 
-    /* Contact footer */
-    .contact-footer {
-      background:#f3f4f6;
-      border-top:1px solid var(--border);
-      text-align:center;
-      padding:1rem;
-      font-size:.82rem;
-      color:var(--gray);
-      margin-top:3rem;
+    /* Approval status */
+    .status-pending  { background:#fef3c7; color:#92400e; }
+    .status-approved { background:#d1fae5; color:#065f46; }
+    .status-rejected { background:#fee2e2; color:#991b1b; }
+
+    /* Info button */
+    .info-btn-wrap { position:relative; display:inline-flex; align-items:center; }
+    .info-btn { background:none; border:none; font-size:1.1rem; color:var(--gray); cursor:pointer; line-height:1; padding:.1rem; }
+    .info-btn:hover { color:var(--blue); }
+    .info-tooltip { display:none; position:absolute; left:1.5rem; top:50%; transform:translateY(-50%); background:#1e293b; color:#fff; font-size:.8rem; padding:.4rem .75rem; border-radius:6px; white-space:nowrap; z-index:10; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+    .info-tooltip.visible { display:block; }
+
+    /* Two-column calendar layout */
+    .cal-sidebar-layout { display:grid; grid-template-columns:1fr 400px; gap:1.25rem; align-items:stretch; width:100%; }
+    .cal-col { min-width:0; }
+    .sidebar-col { display:flex; flex-direction:column; justify-content:space-between; gap:0; }
+    @media (max-width:900px) { .cal-sidebar-layout { grid-template-columns:1fr; } }
+
+    /* Upcoming sessions */
+    .upcoming-item { display:flex; align-items:center; justify-content:space-between; padding:.85rem 0; border-bottom:1px solid var(--border); gap:1rem; }
+    .upcoming-item:last-child { border-bottom:none; padding-bottom:0; }
+    .upcoming-item:first-child { padding-top:0; }
+    .upcoming-left { display:flex; align-items:center; gap:.75rem; }
+    .upcoming-dot { width:.65rem; height:.65rem; border-radius:50%; background:#e8395a; flex-shrink:0; }
+    .upcoming-title { font-weight:600; font-size:.95rem; color:#111827; }
+    .upcoming-meta { font-size:.83rem; color:var(--gray); margin-top:.15rem; }
+    .upcoming-meta strong { color:var(--blue); font-weight:500; }
+    .upcoming-date { font-size:.85rem; color:#374151; white-space:nowrap; font-weight:500; }
+
+    /* Calendar */
+    .cal-wrap { background:#fff; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; background:linear-gradient(135deg, #1a56a0 0%, #0f2d5e 100%); color:#fff; }
+    .cal-header button { background:rgba(255,255,255,.2); border:none; color:#fff; border-radius:4px; padding:.25rem .6rem; cursor:pointer; font-size:1rem; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); }
+    .cal-dow { text-align:center; padding:.4rem; font-size:.75rem; font-weight:600; text-transform:uppercase; color:var(--gray); background:#f9fafb; border-bottom:1px solid var(--border); }
+    .cal-day { min-height:72px; padding:.3rem .4rem; border-right:1px solid var(--border); border-bottom:1px solid var(--border); cursor:pointer; transition:background .12s; position:relative; }
+    .cal-day:hover { background:#eff6ff; }
+    .cal-day:hover .cal-add { opacity:1; }
+    .cal-add { position:absolute; top:.25rem; right:.3rem; font-size:.9rem; color:var(--blue); opacity:0; transition:opacity .15s; line-height:1; font-weight:600; pointer-events:none; }
+
+    /* Quick-add popover */
+    .quick-popover {
+      position:absolute; z-index:200;
+      background:#fff; border:1px solid var(--border);
+      border-radius:var(--radius); padding:1rem;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);
+      width:260px; display:none;
     }
+    .quick-popover.visible { display:block; }
+    .quick-popover h4 { font-size:.9rem; font-weight:600; margin-bottom:.75rem; color:#111827; }
+    .quick-popover .form-group { margin-bottom:.6rem; }
+    .quick-popover label { font-size:.78rem; }
+    .quick-popover .form-control { font-size:.85rem; padding:.35rem .6rem; }
+    .quick-popover-footer { display:flex; gap:.5rem; margin-top:.75rem; }
+    .quick-popover-footer .btn { font-size:.8rem; padding:.35rem .75rem; }
+    .cal-day.other-month { background:#f9fafb; }
+    .cal-day.today { background:#eff6ff; }
+    .cal-day.today .cal-day-num { background:var(--blue); color:#fff; border-radius:50%; width:1.4rem; height:1.4rem; display:flex; align-items:center; justify-content:center; font-size:.8rem; }
+    .cal-day-num { font-size:.8rem; font-weight:600; color:#374151; margin-bottom:.2rem; }
+    .cal-event { font-size:.7rem; border-radius:3px; padding:.1rem .3rem; margin-bottom:.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cal-event.hours { background:#dbeafe; color:#1e40af; }
+    .cal-event.ta    { background:#fef3c7; color:#92400e; }
+    .cal-event.sa    { background:#ffe4e6; color:#9f1239; }
+    .cal-event.h     { background:#d1fae5; color:#065f46; }
+    .cal-event.pending { opacity:.6; font-style:italic; }
+
+    /* Contact footer */
+    .contact-footer { background:#f3f4f6; border-top:1px solid var(--border); text-align:center; padding:1rem; font-size:.82rem; color:var(--gray); margin-top:3rem; }
     .contact-footer strong { color:#374151; }
 
     /* Reminder banner */
-    .reminder-banner {
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
-      border-radius:var(--radius);
-      padding:.75rem 1rem;
-      font-size:.85rem;
-      color:#1e40af;
-      margin-top:1rem;
-    }
+    .reminder-banner { background:#fafafa; border-left:4px solid #9ca3af; border-radius:0 var(--radius) var(--radius) 0; padding:.75rem 1rem; font-size:.85rem; color:#374151; margin-top:1rem; }
 
     /* Stopped panel */
-    .stopped-panel {
-      background:#fff1f2;
-      border:1px solid #fecdd3;
-      border-radius:var(--radius);
-      padding:1rem 1.25rem;
-      margin-top:1rem;
-    }
+    .stopped-panel { background:#fff1f2; border:1px solid #fecdd3; border-radius:var(--radius); padding:1rem 1.25rem; margin-top:1rem; }
     .stopped-panel h4 { color:#9f1239; margin-bottom:.5rem; font-size:.95rem; }
 
-    /* Achievement star marker */
+    /* Achievement star */
     .ach-star { color:var(--blue); font-weight:700; margin-right:.15rem; font-size:.8rem; }
+
+    /* Approvals badge on tab */
+    .tab-badge { background:#ef4444; color:#fff; border-radius:999px; font-size:.7rem; padding:.05rem .4rem; margin-left:.35rem; vertical-align:middle; }
 
     @media print {
       .demo-banner, nav, .tab-bar, .no-print, .reminder-banner { display:none !important; }
@@ -73,8 +120,8 @@
   <div class="nav-right">
     <span id="nav-user"></span>
     <select id="demo-role-switch" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:.25rem .5rem;font-size:.82rem;cursor:pointer;">
-      <option value="admin">View as: Staff</option>
       <option value="tutor">View as: Tutor</option>
+      <option value="admin">View as: Staff</option>
     </select>
   </div>
 </nav>
@@ -82,14 +129,128 @@
 <!-- ── TUTOR VIEW ───────────────────────────────────────────────────────────── -->
 <div id="view-tutor" style="display:none;">
   <div class="page-wrap">
-    <div class="page-header">
-      <h1>Welcome, Maria Lopez</h1>
-      <p>Fiscal Year FY2027 &nbsp;·&nbsp; Log your sessions below and track student progress.</p>
+    <div class="page-header" style="margin:2rem 0 2rem;">
+      <div class="flex items-center gap-1">
+        <h1 style="margin:0;">Welcome, Maria Lopez</h1>
+        <div class="info-btn-wrap">
+          <button class="info-btn" id="info-toggle" aria-label="Info">&#9432;</button>
+          <div class="info-tooltip" id="info-tooltip">Fiscal Year FY2027 &nbsp;·&nbsp; Log sessions from the calendar or the form on the right.</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Log a Session -->
-    <div class="card mt-2">
-      <h2>Log a Session</h2>
+    <!-- Calendar + Sidebar -->
+    <div class="cal-sidebar-layout" style="margin-top:2rem;">
+
+      <!-- Left: Calendar -->
+      <div class="cal-col">
+        <div class="card">
+          <div style="margin-bottom:1rem;">
+            <h2 style="margin:0;">Session Calendar</h2>
+          </div>
+          <div class="cal-wrap" id="cal-wrap"></div>
+        </div>
+      </div>
+
+      <!-- Right: Upcoming + Achievements -->
+      <div class="sidebar-col">
+
+        <!-- Upcoming Sessions -->
+        <div class="card">
+          <h2 style="margin-bottom:1rem;">Upcoming Sessions</h2>
+          <div id="upcoming-list">
+            <div class="upcoming-item">
+              <div class="upcoming-left">
+                <span class="upcoming-dot"></span>
+                <div>
+                  <div class="upcoming-title">Tutoring Session</div>
+                  <div class="upcoming-meta">Student: <strong>Carlos Rivera</strong></div>
+                </div>
+              </div>
+              <div class="upcoming-date">Sep 25 &nbsp; 10:00 AM</div>
+            </div>
+            <div class="upcoming-item">
+              <div class="upcoming-left">
+                <span class="upcoming-dot"></span>
+                <div>
+                  <div class="upcoming-title">Tutoring Session</div>
+                  <div class="upcoming-meta">Student: <strong>Aisha Patel</strong></div>
+                </div>
+              </div>
+              <div class="upcoming-date">Sep 26 &nbsp; 2:00 PM</div>
+            </div>
+            <div class="upcoming-item">
+              <div class="upcoming-left">
+                <span class="upcoming-dot"></span>
+                <div>
+                  <div class="upcoming-title">Tutoring Session</div>
+                  <div class="upcoming-meta">Student: <strong>James Okafor</strong></div>
+                </div>
+              </div>
+              <div class="upcoming-date">Sep 29 &nbsp; 11:00 AM</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Achievements -->
+        <div class="card mt-2" style="margin-top:1rem;">
+          <h2>Student Achievements</h2>
+          <p class="text-sm text-gray" style="margin-bottom:.5rem;">Select a student to view and update their goal achievements.</p>
+          <p class="text-sm text-gray" style="margin-bottom:1rem;">Goals marked with <span class="ach-star">★</span> are priority outcomes tracked by LVAEP.</p>
+          <div class="flex gap-1 items-center" style="margin-bottom:1rem;">
+            <select id="ach-student-select" class="form-control">
+              <option value="">— select student —</option>
+              <option>Carlos Rivera</option>
+              <option>Aisha Patel</option>
+              <option>James Okafor</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="ach-load-btn">Load</button>
+          </div>
+          <div id="ach-panel" style="display:none;">
+
+            <!-- Recurring schedule -->
+            <div class="form-row" style="margin-bottom:1rem;">
+              <div class="form-group" style="margin:0;">
+                <label>Regular Day(s)</label>
+                <input type="text" class="form-control" id="ach-days" placeholder="e.g. Mondays, Wednesdays" />
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label>Regular Time(s)</label>
+                <input type="text" class="form-control" id="ach-times" placeholder="e.g. 10:00 AM – 12:00 PM" />
+              </div>
+            </div>
+
+            <div id="ach-form-inner"></div>
+
+            <div class="stopped-panel">
+              <h4>STOPPED</h4>
+              <label class="ach-item" style="margin-bottom:.75rem;">
+                <input type="checkbox" id="stopped-check" />
+                <span>Student is no longer being tutored — notify the office ASAP.</span>
+              </label>
+              <div id="stopped-reason-group" style="display:none;">
+                <div class="form-group mt-1">
+                  <label>Reason</label>
+                  <input type="text" class="form-control" id="stopped-reason" placeholder="Enter reason…" />
+                </div>
+                <a id="stopped-mailto" href="#" class="btn btn-danger btn-sm mt-1" style="display:none;text-decoration:none;">
+                  📧 Notify Office by Email
+                </a>
+              </div>
+            </div>
+
+            <div class="flex gap-1 mt-2">
+              <button class="btn btn-success" id="ach-save-btn">Save Achievements</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Log a Session (full width) -->
+    <div class="card" style="margin-top:2rem;">
+      <h2 style="margin-bottom:1rem;">Log a Session</h2>
       <form id="demo-log-form">
         <div class="form-row">
           <div class="form-group">
@@ -106,20 +267,12 @@
             <input id="demo-date" type="date" class="form-control" />
           </div>
           <div class="form-group">
-            <label>Session Type</label>
-            <select id="demo-type" class="form-control">
-              <option value="hours">Hours tutored</option>
-              <option value="TA">TA — Tutor Absent</option>
-              <option value="SA">SA — Student Absent</option>
-              <option value="H">H — Holiday</option>
-            </select>
+            <input type="hidden" id="demo-type" value="hours" />
           </div>
           <div class="form-group" id="hours-group">
             <label>Hours</label>
             <input id="demo-hours" type="number" class="form-control" min="0.25" max="12" step="0.25" placeholder="e.g. 1.5" />
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label>Tutoring Site</label>
             <input id="demo-site" type="text" class="form-control" placeholder="e.g. Bloomfield Public Library" />
@@ -137,15 +290,15 @@
       </form>
     </div>
 
-    <!-- Reminder note from original form -->
-    <div class="reminder-banner">
-      <strong>Reminder:</strong> Please consider adding extra time to all meetings, coordinating an extra session whenever possible, and regularly assigning homework (give your students credit for all completed work.)
+    <div class="reminder-banner" id="reminder-banner" style="display:flex;align-items:center;justify-content:space-between;">
+      <span><strong>Reminder:</strong> Please consider adding extra time to all meetings, coordinating an extra session whenever possible, and regularly assigning homework (give your students credit for all completed work.)</span>
+      <button onclick="document.getElementById('reminder-banner').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#6b7280;margin-left:1rem;line-height:1;opacity:.7;" title="Dismiss">✕</button>
     </div>
 
     <!-- Recent Sessions -->
-    <div class="card mt-2">
+    <div class="card" style="margin-top:2rem;">
       <div class="flex items-center justify-between" style="margin-bottom:1rem;">
-        <h2 style="margin:0;">Recent Sessions</h2>
+        <h2 style="margin-bottom:1rem;">Session History</h2>
         <div class="flex gap-1 items-center">
           <select class="form-control" style="width:auto;padding:.35rem .6rem;font-size:.85rem;">
             <option>All students</option>
@@ -160,58 +313,20 @@
         </div>
       </div>
       <div class="table-wrap">
-        <table id="demo-sessions-table">
-          <thead><tr><th>Date</th><th>Student</th><th>Type</th><th>Hours</th><th>Site</th><th>Time</th><th>Month</th><th class="no-print"></th></tr></thead>
+        <table>
+          <thead><tr><th>Date</th><th>Student</th><th>Hours</th><th>Site</th><th>Time</th><th>Month</th><th class="no-print"></th></tr></thead>
           <tbody id="demo-sessions-body">
-            <tr><td>Sep 20, 2026</td><td>Carlos Rivera</td><td><span class="type-pill type-hours">Hours</span></td><td>1.5</td><td>Bloomfield Library</td><td>10:00–11:30</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
-            <tr><td>Sep 18, 2026</td><td>Aisha Patel</td><td><span class="type-pill type-hours">Hours</span></td><td>2.0</td><td>Bloomfield Library</td><td>2:00–4:00</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
-            <tr><td>Sep 15, 2026</td><td>James Okafor</td><td><span class="type-pill type-sa">SA</span></td><td>—</td><td>Bloomfield Library</td><td>—</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
-            <tr><td>Aug 28, 2026</td><td>Carlos Rivera</td><td><span class="type-pill type-hours">Hours</span></td><td>2.0</td><td>Bloomfield Library</td><td>10:00–12:00</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
-            <tr><td>Aug 21, 2026</td><td>Aisha Patel</td><td><span class="type-pill type-ta">TA</span></td><td>—</td><td>—</td><td>—</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Sep 20, 2026</td><td>Carlos Rivera</td><td>1.5</td><td>Bloomfield Library</td><td>10:00–11:30</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Sep 18, 2026</td><td>Aisha Patel</td><td>2.0</td><td>Bloomfield Library</td><td>2:00–4:00</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Aug 28, 2026</td><td>Carlos Rivera</td><td>2.0</td><td>Bloomfield Library</td><td>10:00–12:00</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Aug 21, 2026</td><td>Aisha Patel</td><td>1.5</td><td>Bloomfield Library</td><td>2:00–3:30</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Student Achievements + Stopped -->
-    <div class="card mt-2">
-      <h2>Student Achievements</h2>
-      <p class="text-sm text-gray" style="margin-bottom:.5rem;">Select a student to view and update their goal achievements.</p>
-      <p class="text-sm text-gray" style="margin-bottom:1rem;">Goals marked with <span class="ach-star">★</span> are priority outcomes tracked by LVAEP.</p>
-      <div class="flex gap-1 items-center mt-1" style="margin-bottom:1rem;">
-        <select id="ach-student-select" class="form-control" style="max-width:280px;">
-          <option value="">— select student —</option>
-          <option>Carlos Rivera</option>
-          <option>Aisha Patel</option>
-          <option>James Okafor</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" id="ach-load-btn">Load</button>
-      </div>
-      <div id="ach-panel" style="display:none;">
-        <div id="ach-form-inner"></div>
-
-        <!-- STOPPED section -->
-        <div class="stopped-panel">
-          <h4>STOPPED</h4>
-          <label class="ach-item" style="margin-bottom:.75rem;">
-            <input type="checkbox" id="stopped-check" />
-            <span>Student is no longer being tutored — notify the office ASAP.</span>
-          </label>
-          <div class="form-group mt-1" id="stopped-reason-group" style="display:none;">
-            <label>Reason</label>
-            <input type="text" class="form-control" id="stopped-reason" placeholder="Enter reason…" />
-          </div>
-        </div>
-
-        <div class="flex gap-1 mt-2">
-          <button class="btn btn-success" id="ach-save-btn">Save Achievements</button>
-        </div>
-      </div>
-    </div>
 
   </div>
-
-  <!-- Contact footer -->
   <div class="contact-footer">
     <strong>Contact Information</strong> &nbsp;·&nbsp;
     90 Broad Street, Bloomfield, NJ 07003 &nbsp;·&nbsp;
@@ -226,7 +341,6 @@
   <div class="page-wrap">
     <div class="page-header">
       <h1>Staff Dashboard</h1>
-      <p>Manage tutors, students, and generate monthly attendance reports.</p>
     </div>
 
     <div class="tab-bar">
@@ -235,11 +349,11 @@
       <button class="tab-btn" data-tab="students">Students</button>
     </div>
 
-    <!-- Reports -->
+    <!-- ── REPORTS TAB ── -->
     <div class="tab-panel active" id="tab-reports">
       <div class="card">
         <h2>Generate Monthly Report</h2>
-        <div class="form-row" style="max-width:600px;margin-bottom:1rem;">
+<div class="form-row" style="max-width:600px;margin-bottom:1rem;">
           <div class="form-group">
             <label>Fiscal Year</label>
             <select class="form-control"><option>FY2027 (Jul 2026 – Jun 2027)</option></select>
@@ -254,30 +368,21 @@
               <option>Robert Nunez</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Month</label>
-            <select class="form-control" id="demo-month-sel">
-              <option>Full year</option>
-              <option>July</option><option>August</option><option selected>September</option>
-              <option>October</option><option>November</option><option>December</option>
-              <option>January</option><option>February</option><option>March</option>
-              <option>April</option><option>May</option><option>June</option>
-            </select>
-          </div>
         </div>
         <div class="flex gap-1">
           <button class="btn btn-primary" id="demo-gen-btn">Generate Report</button>
-          <button class="btn btn-ghost no-print" id="demo-print-btn" style="display:none;">Print / Save PDF</button>
+          <button class="btn btn-ghost no-print" id="demo-print-btn" style="display:none;">Print</button>
+          <button class="btn btn-ghost no-print" id="demo-csv-btn" style="display:none;">Export PDF</button>
         </div>
       </div>
       <div id="demo-report-output" style="margin-top:1rem;"></div>
     </div>
 
-    <!-- Tutors -->
+    <!-- ── TUTORS TAB ── -->
     <div class="tab-panel" id="tab-tutors">
       <div class="flex justify-between items-center" style="margin-bottom:1rem;">
         <h2 style="margin:0;">Tutors</h2>
-        <button class="btn btn-primary no-print" onclick="alert('In the real app, this opens a form to create a tutor login account.')">+ Add Tutor</button>
+        <button class="btn btn-primary no-print">+ Add Tutor</button>
       </div>
       <div class="card table-wrap">
         <table>
@@ -292,11 +397,11 @@
       </div>
     </div>
 
-    <!-- Students -->
+    <!-- ── STUDENTS TAB ── -->
     <div class="tab-panel" id="tab-students">
       <div class="flex justify-between items-center" style="margin-bottom:1rem;">
         <h2 style="margin:0;">Students</h2>
-        <button class="btn btn-primary no-print" onclick="alert('In the real app, this opens a form to add a student and assign them to a tutor.')">+ Add Student</button>
+        <button class="btn btn-primary no-print">+ Add Student</button>
       </div>
       <div class="card table-wrap">
         <table>
@@ -319,7 +424,6 @@
     </div>
   </div>
 
-  <!-- Contact footer -->
   <div class="contact-footer">
     <strong>Contact Information</strong> &nbsp;·&nbsp;
     90 Broad Street, Bloomfield, NJ 07003 &nbsp;·&nbsp;
@@ -329,54 +433,71 @@
   </div>
 </div>
 
+<!-- Quick-add popover -->
+<div class="quick-popover" id="quick-popover">
+  <h4 id="quick-popover-title">Log Session</h4>
+  <div class="form-group">
+    <label>Student</label>
+    <select id="quick-student" class="form-control">
+      <option value="">— select —</option>
+      <option>Carlos Rivera</option>
+      <option>Aisha Patel</option>
+      <option>James Okafor</option>
+    </select>
+  </div>
+  <input type="hidden" id="quick-type" value="hours" />
+  <div class="form-group" id="quick-hours-group">
+    <label>Hours</label>
+    <input id="quick-hours" type="number" class="form-control" min="0.25" max="12" step="0.25" placeholder="e.g. 1.5" />
+  </div>
+  <div class="quick-popover-footer">
+    <button class="btn btn-primary" id="quick-save-btn">Log</button>
+    <button class="btn btn-ghost" id="quick-cancel-btn">Cancel</button>
+  </div>
+</div>
+
 <script>
-// ── Achievement goals — starred (*) = priority outcomes ───────────────────────
+// ── Data ───────────────────────────────────────────────────────────────────────
 const ACH_GOALS = {
   "A. Economic": [
-    { label:"Enter Employment",    star:true  },
-    { label:"Retain Employment",   star:true  },
+    { label:"Enter Employment", star:true }, { label:"Retain Employment", star:true },
     { label:"Leave public assistance", star:false }
   ],
   "B. Educational": [
-    { label:"Achieve work-based project learner goal",    star:false },
-    { label:"Enter Occupational Skills Training Program", star:true  },
-    { label:"Enter Postsecondary Education",              star:true  },
-    { label:"Obtain High School Diploma",                 star:true  }
+    { label:"Achieve work-based project learner goal", star:false },
+    { label:"Enter Occupational Skills Training Program", star:true },
+    { label:"Enter Postsecondary Education", star:true },
+    { label:"Obtain High School Diploma", star:true }
   ],
   "C. Family": [
-    { label:"Help more frequently with school",                   star:false },
-    { label:"Increase contact with child(ren)'s teachers",        star:false },
+    { label:"Help more frequently with school", star:false },
+    { label:"Increase contact with child(ren)'s teachers", star:false },
     { label:"More involvement in child(ren)'s school activities", star:false },
-    { label:"Purchase books or magazines",                        star:false },
-    { label:"Read to child(ren)",                                 star:false },
-    { label:"Visit the library (with/for child(ren))",            star:false }
+    { label:"Purchase books or magazines", star:false },
+    { label:"Read to child(ren)", star:false },
+    { label:"Visit the library (with/for child(ren))", star:false }
   ],
   "D. Societal/Community": [
-    { label:"Obtain citizenship",                      star:true  },
-    { label:"Achieve civics skills",                   star:false },
+    { label:"Obtain citizenship", star:true }, { label:"Achieve civics skills", star:false },
     { label:"Increase involvement in community activities", star:false },
-    { label:"Vote or register to vote",                star:false }
+    { label:"Vote or register to vote", star:false }
   ],
   "E. Other(s)": []
 };
 
-// ── Demo grid data ─────────────────────────────────────────────────────────────
 const DEMO_GRID = {
-  "Carlos Rivera": {
-    September:{ 10:"1.5", 20:"1.5" },
-    August:   { 7:"1.5", 28:"2.0" },
-    July:     { 15:"2.0" }
-  },
-  "Aisha Patel": {
-    September:{ 18:"2.0" },
-    August:   { 21:"SA" },
-    July:     { 8:"1.5", 30:"2.0" }
-  },
-  "James Okafor": {
-    September:{ 15:"SA" },
-    August:   { 14:"2.0" },
-    July:     { 1:"2.0", 22:"1.5", 4:"H" }
-  }
+  "Carlos Rivera": { September:{ 10:"1.5", 20:"1.5" }, August:{ 7:"1.5", 28:"2.0" }, July:{ 15:"2.0" } },
+  "Aisha Patel":   { September:{ 18:"2.0" }, August:{ 21:"SA" }, July:{ 8:"1.5", 30:"2.0" } },
+  "James Okafor":  { September:{ 15:"SA" }, August:{ 14:"2.0" }, July:{ 1:"2.0", 22:"1.5", 4:"H" } }
+};
+
+// Calendar session events for tutor view (Sep 2026)
+const CAL_EVENTS = {
+  "2026-09-20": [{ student:"Carlos Rivera", type:"hours", hours:"1.5", approved:true }],
+  "2026-09-18": [{ student:"Aisha Patel",   type:"hours", hours:"2.0", approved:true }],
+  "2026-09-15": [{ student:"James Okafor",  type:"sa",    hours:null,  approved:false }],
+  "2026-08-28": [{ student:"Carlos Rivera", type:"hours", hours:"2.0", approved:true }],
+  "2026-08-21": [{ student:"Aisha Patel",   type:"ta",    hours:null,  approved:true }],
 };
 
 // ── Role switch ────────────────────────────────────────────────────────────────
@@ -385,11 +506,140 @@ function showView(role) {
   document.getElementById("view-admin").style.display = role === "admin" ? "block" : "none";
 }
 document.getElementById("demo-role-switch").addEventListener("change", e => showView(e.target.value));
-showView("admin");
+showView("tutor");
 
 document.getElementById("demo-date").value = new Date().toISOString().split("T")[0];
 
-// ── Show/hide hours field based on session type ────────────────────────────────
+// Info tooltip toggle
+const infoBtn = document.getElementById("info-toggle");
+const infoTip = document.getElementById("info-tooltip");
+infoBtn.addEventListener("click", e => { e.stopPropagation(); infoTip.classList.toggle("visible"); });
+document.addEventListener("click", () => infoTip.classList.remove("visible"));
+
+// ── Calendar ───────────────────────────────────────────────────────────────────
+let calYear = 2026, calMonth = 8; // Sep 2026 (0-indexed)
+
+function buildCalendar() {
+  const wrap  = document.getElementById("cal-wrap");
+  const today = new Date();
+  const first = new Date(calYear, calMonth, 1);
+  const last  = new Date(calYear, calMonth + 1, 0);
+  const startDow = first.getDay();
+
+  const monthName = first.toLocaleDateString("en-US", { month:"long", year:"numeric" });
+  let html = `
+    <div class="cal-header">
+      <button id="cal-prev">‹</button>
+      <strong>${monthName}</strong>
+      <button id="cal-next">›</button>
+    </div>
+    <div class="cal-grid">
+      ${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cal-dow">${d}</div>`).join("")}`;
+
+  // Blank cells before first day
+  for (let i = 0; i < startDow; i++) html += `<div class="cal-day other-month"></div>`;
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const dateKey = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+    const events  = CAL_EVENTS[dateKey] || [];
+    const evHtml  = events.map(ev => {
+      const lbl = ev.type === "hours" ? `${ev.student.split(" ")[0]} · ${ev.hours}h` : `${ev.student.split(" ")[0]} · ${ev.type.toUpperCase()}`;
+      return `<div class="cal-event ${ev.type} ${ev.approved ? "" : "pending"}">${lbl}</div>`;
+    }).join("");
+    html += `<div class="cal-day${isToday?" today":""}" data-date="${dateKey}">
+      <div class="cal-day-num">${d}</div>${evHtml}<span class="cal-add">+</span>
+    </div>`;
+  }
+
+  // Trailing blanks
+  const trailing = (7 - (startDow + last.getDate()) % 7) % 7;
+  for (let i = 0; i < trailing; i++) html += `<div class="cal-day other-month"></div>`;
+  html += `</div>`;
+
+  wrap.innerHTML = html;
+
+  document.getElementById("cal-prev").addEventListener("click", () => {
+    calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } buildCalendar();
+  });
+  document.getElementById("cal-next").addEventListener("click", () => {
+    calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } buildCalendar();
+  });
+
+  // Click day → open quick-add popover
+  wrap.querySelectorAll(".cal-day[data-date]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openQuickAdd(el.dataset.date, el);
+    });
+  });
+}
+buildCalendar();
+
+// ── Quick-add popover ──────────────────────────────────────────────────────────
+let quickDate = null;
+const popover = document.getElementById("quick-popover");
+
+function openQuickAdd(date, dayEl) {
+  quickDate = date;
+  const d = new Date(date + "T12:00:00");
+  const label = d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+  document.getElementById("quick-popover-title").textContent = label;
+  document.getElementById("quick-student").value = "";
+  document.getElementById("quick-type").value = "hours";
+  document.getElementById("quick-hours").value = "";
+  document.getElementById("quick-hours-group").style.display = "";
+
+  // Position popover near the clicked day
+  const rect = dayEl.getBoundingClientRect();
+  const scrollY = window.scrollY;
+  popover.style.top  = (rect.bottom + scrollY + 4) + "px";
+  popover.style.left = Math.min(rect.left, window.innerWidth - 280) + "px";
+  popover.classList.add("visible");
+}
+
+function closeQuickAdd() { popover.classList.remove("visible"); quickDate = null; }
+
+document.getElementById("quick-type").addEventListener("change", e => {
+  document.getElementById("quick-hours-group").style.display = e.target.value === "hours" ? "" : "none";
+});
+
+document.getElementById("quick-cancel-btn").addEventListener("click", closeQuickAdd);
+document.addEventListener("click", e => { if (!popover.contains(e.target)) closeQuickAdd(); });
+
+document.getElementById("quick-save-btn").addEventListener("click", () => {
+  const student = document.getElementById("quick-student").value;
+  const type    = document.getElementById("quick-type").value;
+  const hours   = document.getElementById("quick-hours").value;
+  if (!student || (type === "hours" && !hours)) return;
+
+  const d = new Date(quickDate + "T12:00:00");
+  const mo = ["July","August","September","October","November","December","January","February","March","April","May","June"][
+    d.getMonth() >= 6 ? d.getMonth() - 6 : d.getMonth() + 6
+  ];
+  const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+  const typeMap = {
+    hours:`<span class="type-pill type-hours">Hours</span>`,
+    TA:`<span class="type-pill type-ta">TA</span>`,
+    SA:`<span class="type-pill type-sa">SA</span>`,
+    H:`<span class="type-pill type-h">H</span>`
+  };
+
+  // Add to sessions table
+  const tbody = document.getElementById("demo-sessions-body");
+  const row = document.createElement("tr");
+  row.innerHTML = `<td>${dateStr}</td><td>${student}</td><td>${hours}</td><td>—</td><td>—</td><td>${mo}</td><td><button class="btn btn-ghost btn-sm">Delete</button></td>`;
+  tbody.insertBefore(row, tbody.firstChild);
+
+  // Add to calendar
+  if (!CAL_EVENTS[quickDate]) CAL_EVENTS[quickDate] = [];
+  CAL_EVENTS[quickDate].push({ student, type: type === "hours" ? "hours" : type.toLowerCase(), hours: hours || null, approved: false });
+  if (d.getFullYear() === calYear && d.getMonth() === calMonth) buildCalendar();
+
+  closeQuickAdd();
+});
+
+// ── Session type toggle ────────────────────────────────────────────────────────
 document.getElementById("demo-type").addEventListener("change", e => {
   document.getElementById("hours-group").style.display = e.target.value === "hours" ? "" : "none";
 });
@@ -404,8 +654,7 @@ document.getElementById("demo-log-form").addEventListener("submit", e => {
   const site      = document.getElementById("demo-site").value || "—";
   const timeStart = document.getElementById("demo-time-start").value;
   const timeEnd   = document.getElementById("demo-time-end").value;
-  if (!student) return;
-  if (type === "hours" && !hours) return;
+  if (!student || (type === "hours" && !hours)) return;
 
   const d = new Date(date + "T12:00:00");
   const mo = ["July","August","September","October","November","December","January","February","March","April","May","June"][
@@ -413,21 +662,24 @@ document.getElementById("demo-log-form").addEventListener("submit", e => {
   ];
   const dateStr = d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
   const timeStr = timeStart && timeEnd ? `${timeStart}–${timeEnd}` : "—";
-
   const typeMap = {
-    hours: `<span class="type-pill type-hours">Hours</span>`,
-    TA:    `<span class="type-pill type-ta">TA</span>`,
-    SA:    `<span class="type-pill type-sa">SA</span>`,
-    H:     `<span class="type-pill type-h">H</span>`
+    hours:`<span class="type-pill type-hours">Hours</span>`,
+    TA:`<span class="type-pill type-ta">TA</span>`,
+    SA:`<span class="type-pill type-sa">SA</span>`,
+    H:`<span class="type-pill type-h">H</span>`
   };
 
   const tbody = document.getElementById("demo-sessions-body");
   const row = document.createElement("tr");
-  row.innerHTML = `<td>${dateStr}</td><td>${student}</td><td>${typeMap[type]}</td><td>${type === "hours" ? hours : "—"}</td><td>${site}</td><td>${timeStr}</td><td>${mo}</td><td><button class="btn btn-ghost btn-sm">Delete</button></td>`;
+  row.innerHTML = `<td>${dateStr}</td><td>${student}</td><td>${hours}</td><td>${site}</td><td>${timeStr}</td><td>${mo}</td><td><button class="btn btn-ghost btn-sm">Delete</button></td>`;
   tbody.insertBefore(row, tbody.firstChild);
 
-  if (type === "hours") document.getElementById("demo-hours").value = "";
+  // Add to calendar
+  if (!CAL_EVENTS[date]) CAL_EVENTS[date] = [];
+  CAL_EVENTS[date].push({ student, type: type === "hours" ? "hours" : type.toLowerCase(), hours: hours || null, approved: false });
+  if (d.getFullYear() === calYear && d.getMonth() === calMonth) buildCalendar();
 
+  if (type === "hours") document.getElementById("demo-hours").value = "";
   const btn = e.target.querySelector("button[type=submit]");
   btn.textContent = "✓ Logged!";
   btn.style.background = "var(--green)";
@@ -442,35 +694,35 @@ document.getElementById("demo-sessions-body").addEventListener("click", e => {
 document.getElementById("ach-load-btn").addEventListener("click", () => {
   const sid = document.getElementById("ach-student-select").value;
   if (!sid) return;
-  const inner = document.getElementById("ach-form-inner");
   const preChecked = { "A. Economic__0": true, "B. Educational__3": true };
-
-  inner.innerHTML = Object.entries(ACH_GOALS).map(([cat, goals]) => `
-    <div class="ach-section">
-      <h4>${cat}</h4>
-      <div class="ach-grid">
-        ${goals.map((g, i) => `
-          <label class="ach-item">
-            <input type="checkbox" ${preChecked[`${cat}__${i}`] ? "checked" : ""} />
-            ${g.star ? `<span class="ach-star">★</span>` : ""}${g.label}
-          </label>`).join("")}
-        ${cat === "E. Other(s)" ? `<div class="form-group mt-1" style="margin:0"><input type="text" class="form-control" placeholder="Describe other goal…" /></div>` : ""}
-      </div>
-    </div>`).join("");
-
+  document.getElementById("ach-form-inner").innerHTML = Object.entries(ACH_GOALS).map(([cat, goals]) => `
+    <div class="ach-section"><h4>${cat}</h4><div class="ach-grid">
+      ${goals.map((g,i) => `<label class="ach-item"><input type="checkbox" ${preChecked[`${cat}__${i}`]?"checked":""} />${g.star?`<span class="ach-star">★</span>`:""}${g.label}</label>`).join("")}
+      ${cat==="E. Other(s)"?`<div class="form-group mt-1" style="margin:0"><input type="text" class="form-control" placeholder="Describe other goal…" /></div>`:""}
+    </div></div>`).join("");
   document.getElementById("ach-panel").style.display = "block";
   document.getElementById("stopped-check").checked = false;
   document.getElementById("stopped-reason-group").style.display = "none";
 });
-
 document.getElementById("stopped-check").addEventListener("change", e => {
   document.getElementById("stopped-reason-group").style.display = e.target.checked ? "block" : "none";
+  updateStoppedMailto();
 });
-
+document.getElementById("stopped-reason").addEventListener("input", updateStoppedMailto);
+function updateStoppedMailto() {
+  const mailto = document.getElementById("stopped-mailto");
+  if (!document.getElementById("stopped-check").checked) { mailto.style.display = "none"; return; }
+  const sel = document.getElementById("ach-student-select");
+  const student = sel.options[sel.selectedIndex]?.text || "student";
+  const reason  = document.getElementById("stopped-reason").value.trim();
+  const subject = encodeURIComponent(`STOPPED: ${student}`);
+  const body    = encodeURIComponent(`Dear LVAEP Staff,\n\nI am writing to inform you that the following student has stopped tutoring:\n\nStudent: ${student}\nReason: ${reason || "(no reason provided)"}\n\nPlease update your records accordingly.\n\nThank you.`);
+  mailto.href = `mailto:info@lvaep.org?subject=${subject}&body=${body}`;
+  mailto.style.display = "inline-flex";
+}
 document.getElementById("ach-save-btn").addEventListener("click", () => {
   const btn = document.getElementById("ach-save-btn");
-  btn.textContent = "✓ Saved!";
-  btn.style.background = "#1a7a4a";
+  btn.textContent = "✓ Saved!"; btn.style.background = "#1a7a4a";
   setTimeout(() => { btn.textContent = "Save Achievements"; btn.style.background = ""; }, 1800);
 });
 
@@ -484,64 +736,87 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 });
 
 // ── Generate report ────────────────────────────────────────────────────────────
+let lastReportData = [];
+
 document.getElementById("demo-gen-btn").addEventListener("click", () => {
   const output   = document.getElementById("demo-report-output");
   const printBtn = document.getElementById("demo-print-btn");
-  const month    = document.getElementById("demo-month-sel").value;
-  const months   = month === "Full year"
-    ? ["July","August","September","October","November","December","January","February","March","April","May","June"]
-    : [month];
+  const csvBtn   = document.getElementById("demo-csv-btn");
+  const months = ["July","August","September","October","November","December","January","February","March","April","May","June"];
 
-  // Legend
-  let html = `
-    <p style="font-size:.82rem;color:var(--gray);margin-bottom:1rem;">
-      <strong style="color:#374151;">Key:</strong> &nbsp; Numbers = hours tutored &nbsp;·&nbsp; TA = Tutor Absent &nbsp;·&nbsp; SA = Student Absent &nbsp;·&nbsp; H = Holiday
-    </p>
-    <div class="card" style="margin-bottom:1rem;">
-      <div class="flex justify-between items-center" style="margin-bottom:.75rem;">
-        <h2 style="margin:0;">Tutor: Maria Lopez</h2>
-        <span class="badge badge-blue">Tutoring Site: Bloomfield Public Library</span>
-      </div>`;
+  lastReportData = [];
+
+  const fiscalYear = "FY2027 (July 2026 – June 2027)";
+  const tutorName  = "Maria Lopez";
+  const tutoringSite = "Bloomfield Public Library";
+
+  const keyBar = `<p style="font-size:.78rem;color:var(--gray);margin-bottom:1.25rem;">
+    <strong style="color:#374151;">Key:</strong> &nbsp; Numbers = hours tutored &nbsp;·&nbsp;
+    <span class="type-ta">TA</span> = Tutor Absent &nbsp;·&nbsp;
+    <span class="type-sa">SA</span> = Student Absent &nbsp;·&nbsp;
+    <span class="type-h">H</span> = Holiday
+  </p>`;
+
+  let html = keyBar;
 
   Object.entries(DEMO_GRID).forEach(([student, byMonth]) => {
     const colTotals = {};
     months.forEach(m => colTotals[m] = 0);
 
-    html += `<div style="margin-bottom:1.5rem;">
-      <h3 style="margin-bottom:.5rem;">Student: ${student}</h3>
-      <div class="table-wrap"><table class="report-table">
-        <thead><tr><th>Day</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>Total</th></tr></thead>
-        <tbody>`;
-
-    for (let d = 1; d <= 31; d++) {
-      let rowTotal = 0;
-      const cells = months.map(m => {
+    // Build month blocks
+    const monthBlocks = months.map(m => {
+      const rows = [];
+      for (let d = 1; d <= 31; d++) {
         const v = byMonth[m]?.[d];
-        if (!v) return `<td></td>`;
+        if (!v) continue;
         const num = parseFloat(v);
-        if (!isNaN(num)) { colTotals[m] += num; rowTotal += num; return `<td>${v}</td>`; }
-        // TA / SA / H
-        const cls = v === "TA" ? "type-ta" : v === "SA" ? "type-sa" : "type-h";
-        return `<td><span class="type-pill ${cls}" style="font-size:.7rem;padding:.05rem .3rem;">${v}</span></td>`;
-      }).join("");
-      html += `<tr><td>${d}</td>${cells}<td>${rowTotal || ""}</td></tr>`;
-    }
+        if (!isNaN(num)) { colTotals[m] += num; }
+        lastReportData.push({ student, month: m, day: d, value: v });
+        const cls = v==="TA"?"type-ta":v==="SA"?"type-sa":v==="H"?"type-h":"";
+        rows.push(`<tr><td>${d}</td><td class="${cls}">${v}</td></tr>`);
+      }
+      const total = colTotals[m];
+      const inner = rows.length
+        ? `<table><thead><tr><th>Day</th><th>Hrs</th></tr></thead><tbody>${rows.join("")}</tbody></table>
+           <div class="month-total">Total: ${total} hr${total !== 1 ? "s" : ""}</div>`
+        : `<div class="month-empty">No sessions</div>`;
+      return `<div class="report-month-block">
+        <div class="month-head">${m}</div>
+        ${inner}
+      </div>`;
+    }).join("");
 
-    const grand = Object.values(colTotals).reduce((a,v)=>a+v,0);
-    html += `<tr class="total-row"><td>Total</td>${months.map(m=>`<td>${colTotals[m]||""}</td>`).join("")}<td>${grand}</td></tr>`;
-    html += `</tbody></table></div></div>`;
+    const grand = Object.values(colTotals).reduce((a, v) => a + v, 0);
+
+    html += `<div class="card" style="margin-bottom:2rem;">
+      <div class="report-header">
+        <div class="org-name">LITERACY VOLUNTEERS OF AMERICA, ESSEX/PASSAIC COUNTY</div>
+        <div class="form-title">Student Attendance &amp; Achievement — Annual Report</div>
+        <div class="report-meta">
+          <div><span>Tutor:</span> ${tutorName}</div>
+          <div><span>Student:</span> ${student}</div>
+          <div><span>Fiscal Year:</span> ${fiscalYear}</div>
+          <div><span>Tutoring Site:</span> ${tutoringSite}</div>
+        </div>
+      </div>
+      <div class="report-months">${monthBlocks}</div>
+      <div class="report-grand-total">
+        <span>Annual Total</span>
+        <span>${grand} hour${grand !== 1 ? "s" : ""}</span>
+      </div>
+    </div>`;
   });
 
-  html += `</div>
-    <p style="font-size:.8rem;color:var(--gray);margin-top:.5rem;">
-      Please consider adding extra time to all meetings, coordinating an extra session whenever possible, and regularly assigning homework (give your students credit for all completed work.)
-    </p>`;
 
   output.innerHTML = html;
   printBtn.style.display = "inline-flex";
+  csvBtn.style.display   = "inline-flex";
 });
 
 document.getElementById("demo-print-btn").addEventListener("click", () => window.print());
+
+// ── PDF export ─────────────────────────────────────────────────────────────────
+document.getElementById("demo-csv-btn").addEventListener("click", () => window.print());
 </script>
 </body>
 </html>
