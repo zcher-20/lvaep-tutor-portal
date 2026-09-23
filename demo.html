@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LVAEP — Demo</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .demo-banner { background:#374151; color:#fff; text-align:center; padding:.5rem; font-size:.85rem; font-weight:600; }
+    .tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border); margin:1.5rem 0 1rem; }
+    .tab-btn { background:none; border:none; padding:.6rem 1.25rem; font-size:.9rem; font-weight:500; cursor:pointer; color:var(--gray); border-bottom:2px solid transparent; margin-bottom:-2px; transition:color .15s,border-color .15s; }
+    .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* Session type pills */
+    .type-pill { display:inline-block; padding:.1rem .45rem; border-radius:4px; font-size:.75rem; font-weight:500; }
+    .type-hours { background:#dbeafe; color:#1e40af; }
+    .type-ta    { background:#fef3c7; color:#92400e; }
+    .type-sa    { background:#ffe4e6; color:#9f1239; }
+    .type-h     { background:#d1fae5; color:#065f46; }
+
+    /* Contact footer */
+    .contact-footer {
+      background:#f3f4f6;
+      border-top:1px solid var(--border);
+      text-align:center;
+      padding:1rem;
+      font-size:.82rem;
+      color:var(--gray);
+      margin-top:3rem;
+    }
+    .contact-footer strong { color:#374151; }
+
+    /* Reminder banner */
+    .reminder-banner {
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      border-radius:var(--radius);
+      padding:.75rem 1rem;
+      font-size:.85rem;
+      color:#1e40af;
+      margin-top:1rem;
+    }
+
+    /* Stopped panel */
+    .stopped-panel {
+      background:#fff1f2;
+      border:1px solid #fecdd3;
+      border-radius:var(--radius);
+      padding:1rem 1.25rem;
+      margin-top:1rem;
+    }
+    .stopped-panel h4 { color:#9f1239; margin-bottom:.5rem; font-size:.95rem; }
+
+    /* Achievement star marker */
+    .ach-star { color:var(--blue); font-weight:700; margin-right:.15rem; font-size:.8rem; }
+
+    @media print {
+      .demo-banner, nav, .tab-bar, .no-print, .reminder-banner { display:none !important; }
+      .tab-panel { display:block !important; }
+      body { background:white; }
+      .contact-footer { position:fixed; bottom:0; width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="demo-banner">⚠ DEMO MODE — No data is saved. <a href="index.html" style="color:#93c5fd;">Go to real login →</a></div>
+
+<nav>
+  <div class="brand">LVAEP<span>Portal</span></div>
+  <div class="nav-right">
+    <span id="nav-user"></span>
+    <select id="demo-role-switch" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:.25rem .5rem;font-size:.82rem;cursor:pointer;">
+      <option value="admin">View as: Staff</option>
+      <option value="tutor">View as: Tutor</option>
+    </select>
+  </div>
+</nav>
+
+<!-- ── TUTOR VIEW ───────────────────────────────────────────────────────────── -->
+<div id="view-tutor" style="display:none;">
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1>Welcome, Maria Lopez</h1>
+      <p>Fiscal Year FY2027 &nbsp;·&nbsp; Log your sessions below and track student progress.</p>
+    </div>
+
+    <!-- Log a Session -->
+    <div class="card mt-2">
+      <h2>Log a Session</h2>
+      <form id="demo-log-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Student</label>
+            <select id="demo-student" class="form-control">
+              <option value="">— select student —</option>
+              <option>Carlos Rivera</option>
+              <option>Aisha Patel</option>
+              <option>James Okafor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input id="demo-date" type="date" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>Session Type</label>
+            <select id="demo-type" class="form-control">
+              <option value="hours">Hours tutored</option>
+              <option value="TA">TA — Tutor Absent</option>
+              <option value="SA">SA — Student Absent</option>
+              <option value="H">H — Holiday</option>
+            </select>
+          </div>
+          <div class="form-group" id="hours-group">
+            <label>Hours</label>
+            <input id="demo-hours" type="number" class="form-control" min="0.25" max="12" step="0.25" placeholder="e.g. 1.5" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tutoring Site</label>
+            <input id="demo-site" type="text" class="form-control" placeholder="e.g. Bloomfield Public Library" />
+          </div>
+          <div class="form-group">
+            <label>Start Time</label>
+            <input id="demo-time-start" type="time" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input id="demo-time-end" type="time" class="form-control" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Log Session</button>
+      </form>
+    </div>
+
+    <!-- Reminder note from original form -->
+    <div class="reminder-banner">
+      <strong>Reminder:</strong> Please consider adding extra time to all meetings, coordinating an extra session whenever possible, and regularly assigning homework (give your students credit for all completed work.)
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="card mt-2">
+      <div class="flex items-center justify-between" style="margin-bottom:1rem;">
+        <h2 style="margin:0;">Recent Sessions</h2>
+        <div class="flex gap-1 items-center">
+          <select class="form-control" style="width:auto;padding:.35rem .6rem;font-size:.85rem;">
+            <option>All students</option>
+            <option>Carlos Rivera</option>
+            <option>Aisha Patel</option>
+            <option>James Okafor</option>
+          </select>
+          <select class="form-control" style="width:auto;padding:.35rem .6rem;font-size:.85rem;">
+            <option>All months</option>
+            <option>July</option><option>August</option><option>September</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="demo-sessions-table">
+          <thead><tr><th>Date</th><th>Student</th><th>Type</th><th>Hours</th><th>Site</th><th>Time</th><th>Month</th><th class="no-print"></th></tr></thead>
+          <tbody id="demo-sessions-body">
+            <tr><td>Sep 20, 2026</td><td>Carlos Rivera</td><td><span class="type-pill type-hours">Hours</span></td><td>1.5</td><td>Bloomfield Library</td><td>10:00–11:30</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Sep 18, 2026</td><td>Aisha Patel</td><td><span class="type-pill type-hours">Hours</span></td><td>2.0</td><td>Bloomfield Library</td><td>2:00–4:00</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Sep 15, 2026</td><td>James Okafor</td><td><span class="type-pill type-sa">SA</span></td><td>—</td><td>Bloomfield Library</td><td>—</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Aug 28, 2026</td><td>Carlos Rivera</td><td><span class="type-pill type-hours">Hours</span></td><td>2.0</td><td>Bloomfield Library</td><td>10:00–12:00</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+            <tr><td>Aug 21, 2026</td><td>Aisha Patel</td><td><span class="type-pill type-ta">TA</span></td><td>—</td><td>—</td><td>—</td><td>August</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Student Achievements + Stopped -->
+    <div class="card mt-2">
+      <h2>Student Achievements</h2>
+      <p class="text-sm text-gray" style="margin-bottom:.5rem;">Select a student to view and update their goal achievements.</p>
+      <p class="text-sm text-gray" style="margin-bottom:1rem;">Goals marked with <span class="ach-star">★</span> are priority outcomes tracked by LVAEP.</p>
+      <div class="flex gap-1 items-center mt-1" style="margin-bottom:1rem;">
+        <select id="ach-student-select" class="form-control" style="max-width:280px;">
+          <option value="">— select student —</option>
+          <option>Carlos Rivera</option>
+          <option>Aisha Patel</option>
+          <option>James Okafor</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="ach-load-btn">Load</button>
+      </div>
+      <div id="ach-panel" style="display:none;">
+        <div id="ach-form-inner"></div>
+
+        <!-- STOPPED section -->
+        <div class="stopped-panel">
+          <h4>STOPPED</h4>
+          <label class="ach-item" style="margin-bottom:.75rem;">
+            <input type="checkbox" id="stopped-check" />
+            <span>Student is no longer being tutored — notify the office ASAP.</span>
+          </label>
+          <div class="form-group mt-1" id="stopped-reason-group" style="display:none;">
+            <label>Reason</label>
+            <input type="text" class="form-control" id="stopped-reason" placeholder="Enter reason…" />
+          </div>
+        </div>
+
+        <div class="flex gap-1 mt-2">
+          <button class="btn btn-success" id="ach-save-btn">Save Achievements</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Contact footer -->
+  <div class="contact-footer">
+    <strong>Contact Information</strong> &nbsp;·&nbsp;
+    90 Broad Street, Bloomfield, NJ 07003 &nbsp;·&nbsp;
+    Bloomfield Public Library &nbsp;·&nbsp;
+    <a href="mailto:info@lvaep.org">info@lvaep.org</a> &nbsp;·&nbsp;
+    (973) 566-6200 x216
+  </div>
+</div>
+
+<!-- ── ADMIN VIEW ───────────────────────────────────────────────────────────── -->
+<div id="view-admin" style="display:none;">
+  <div class="page-wrap">
+    <div class="page-header">
+      <h1>Staff Dashboard</h1>
+      <p>Manage tutors, students, and generate monthly attendance reports.</p>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="reports">Monthly Reports</button>
+      <button class="tab-btn" data-tab="tutors">Tutors</button>
+      <button class="tab-btn" data-tab="students">Students</button>
+    </div>
+
+    <!-- Reports -->
+    <div class="tab-panel active" id="tab-reports">
+      <div class="card">
+        <h2>Generate Monthly Report</h2>
+        <div class="form-row" style="max-width:600px;margin-bottom:1rem;">
+          <div class="form-group">
+            <label>Fiscal Year</label>
+            <select class="form-control"><option>FY2027 (Jul 2026 – Jun 2027)</option></select>
+          </div>
+          <div class="form-group">
+            <label>Tutor</label>
+            <select class="form-control">
+              <option>All tutors</option>
+              <option>Maria Lopez</option>
+              <option>David Kim</option>
+              <option>Sarah Chen</option>
+              <option>Robert Nunez</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Month</label>
+            <select class="form-control" id="demo-month-sel">
+              <option>Full year</option>
+              <option>July</option><option>August</option><option selected>September</option>
+              <option>October</option><option>November</option><option>December</option>
+              <option>January</option><option>February</option><option>March</option>
+              <option>April</option><option>May</option><option>June</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-1">
+          <button class="btn btn-primary" id="demo-gen-btn">Generate Report</button>
+          <button class="btn btn-ghost no-print" id="demo-print-btn" style="display:none;">Print / Save PDF</button>
+        </div>
+      </div>
+      <div id="demo-report-output" style="margin-top:1rem;"></div>
+    </div>
+
+    <!-- Tutors -->
+    <div class="tab-panel" id="tab-tutors">
+      <div class="flex justify-between items-center" style="margin-bottom:1rem;">
+        <h2 style="margin:0;">Tutors</h2>
+        <button class="btn btn-primary no-print" onclick="alert('In the real app, this opens a form to create a tutor login account.')">+ Add Tutor</button>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Students</th><th class="no-print"></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Maria Lopez</strong></td><td>maria@example.com</td><td><span class="badge badge-blue">3 students</span></td><td class="no-print"><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+            <tr><td><strong>David Kim</strong></td><td>david@example.com</td><td><span class="badge badge-blue">3 students</span></td><td class="no-print"><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+            <tr><td><strong>Sarah Chen</strong></td><td>sarah@example.com</td><td><span class="badge badge-blue">3 students</span></td><td class="no-print"><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+            <tr><td><strong>Robert Nunez</strong></td><td>robert@example.com</td><td><span class="badge badge-blue">2 students</span></td><td class="no-print"><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Students -->
+    <div class="tab-panel" id="tab-students">
+      <div class="flex justify-between items-center" style="margin-bottom:1rem;">
+        <h2 style="margin:0;">Students</h2>
+        <button class="btn btn-primary no-print" onclick="alert('In the real app, this opens a form to add a student and assign them to a tutor.')">+ Add Student</button>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Tutor</th><th>Status</th><th>Stopped Reason</th><th class="no-print"></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Carlos Rivera</strong></td><td>Maria Lopez</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Aisha Patel</strong></td><td>Maria Lopez</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>James Okafor</strong></td><td>Maria Lopez</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Priya Nair</strong></td><td>David Kim</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Luis Morales</strong></td><td>David Kim</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Fatima Hassan</strong></td><td>David Kim</td><td><span class="badge badge-red">Stopped</span></td><td class="text-gray text-sm">Relocated out of state</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Kevin Tran</strong></td><td>Sarah Chen</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Amara Diallo</strong></td><td>Sarah Chen</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Min-Jun Lee</strong></td><td>Sarah Chen</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Rosa Gutierrez</strong></td><td>Robert Nunez</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+            <tr><td><strong>Dimitri Volkov</strong></td><td>Robert Nunez</td><td><span class="badge badge-green">Active</span></td><td>—</td><td class="no-print"><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact footer -->
+  <div class="contact-footer">
+    <strong>Contact Information</strong> &nbsp;·&nbsp;
+    90 Broad Street, Bloomfield, NJ 07003 &nbsp;·&nbsp;
+    Bloomfield Public Library &nbsp;·&nbsp;
+    <a href="mailto:info@lvaep.org">info@lvaep.org</a> &nbsp;·&nbsp;
+    (973) 566-6200 x216
+  </div>
+</div>
+
+<script>
+// ── Achievement goals — starred (*) = priority outcomes ───────────────────────
+const ACH_GOALS = {
+  "A. Economic": [
+    { label:"Enter Employment",    star:true  },
+    { label:"Retain Employment",   star:true  },
+    { label:"Leave public assistance", star:false }
+  ],
+  "B. Educational": [
+    { label:"Achieve work-based project learner goal",    star:false },
+    { label:"Enter Occupational Skills Training Program", star:true  },
+    { label:"Enter Postsecondary Education",              star:true  },
+    { label:"Obtain High School Diploma",                 star:true  }
+  ],
+  "C. Family": [
+    { label:"Help more frequently with school",                   star:false },
+    { label:"Increase contact with child(ren)'s teachers",        star:false },
+    { label:"More involvement in child(ren)'s school activities", star:false },
+    { label:"Purchase books or magazines",                        star:false },
+    { label:"Read to child(ren)",                                 star:false },
+    { label:"Visit the library (with/for child(ren))",            star:false }
+  ],
+  "D. Societal/Community": [
+    { label:"Obtain citizenship",                      star:true  },
+    { label:"Achieve civics skills",                   star:false },
+    { label:"Increase involvement in community activities", star:false },
+    { label:"Vote or register to vote",                star:false }
+  ],
+  "E. Other(s)": []
+};
+
+// ── Demo grid data ─────────────────────────────────────────────────────────────
+const DEMO_GRID = {
+  "Carlos Rivera": {
+    September:{ 10:"1.5", 20:"1.5" },
+    August:   { 7:"1.5", 28:"2.0" },
+    July:     { 15:"2.0" }
+  },
+  "Aisha Patel": {
+    September:{ 18:"2.0" },
+    August:   { 21:"SA" },
+    July:     { 8:"1.5", 30:"2.0" }
+  },
+  "James Okafor": {
+    September:{ 15:"SA" },
+    August:   { 14:"2.0" },
+    July:     { 1:"2.0", 22:"1.5", 4:"H" }
+  }
+};
+
+// ── Role switch ────────────────────────────────────────────────────────────────
+function showView(role) {
+  document.getElementById("view-tutor").style.display = role === "tutor" ? "block" : "none";
+  document.getElementById("view-admin").style.display = role === "admin" ? "block" : "none";
+}
+document.getElementById("demo-role-switch").addEventListener("change", e => showView(e.target.value));
+showView("admin");
+
+document.getElementById("demo-date").value = new Date().toISOString().split("T")[0];
+
+// ── Show/hide hours field based on session type ────────────────────────────────
+document.getElementById("demo-type").addEventListener("change", e => {
+  document.getElementById("hours-group").style.display = e.target.value === "hours" ? "" : "none";
+});
+
+// ── Log session ────────────────────────────────────────────────────────────────
+document.getElementById("demo-log-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const student   = document.getElementById("demo-student").value;
+  const date      = document.getElementById("demo-date").value;
+  const type      = document.getElementById("demo-type").value;
+  const hours     = document.getElementById("demo-hours").value;
+  const site      = document.getElementById("demo-site").value || "—";
+  const timeStart = document.getElementById("demo-time-start").value;
+  const timeEnd   = document.getElementById("demo-time-end").value;
+  if (!student) return;
+  if (type === "hours" && !hours) return;
+
+  const d = new Date(date + "T12:00:00");
+  const mo = ["July","August","September","October","November","December","January","February","March","April","May","June"][
+    d.getMonth() >= 6 ? d.getMonth() - 6 : d.getMonth() + 6
+  ];
+  const dateStr = d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+  const timeStr = timeStart && timeEnd ? `${timeStart}–${timeEnd}` : "—";
+
+  const typeMap = {
+    hours: `<span class="type-pill type-hours">Hours</span>`,
+    TA:    `<span class="type-pill type-ta">TA</span>`,
+    SA:    `<span class="type-pill type-sa">SA</span>`,
+    H:     `<span class="type-pill type-h">H</span>`
+  };
+
+  const tbody = document.getElementById("demo-sessions-body");
+  const row = document.createElement("tr");
+  row.innerHTML = `<td>${dateStr}</td><td>${student}</td><td>${typeMap[type]}</td><td>${type === "hours" ? hours : "—"}</td><td>${site}</td><td>${timeStr}</td><td>${mo}</td><td><button class="btn btn-ghost btn-sm">Delete</button></td>`;
+  tbody.insertBefore(row, tbody.firstChild);
+
+  if (type === "hours") document.getElementById("demo-hours").value = "";
+
+  const btn = e.target.querySelector("button[type=submit]");
+  btn.textContent = "✓ Logged!";
+  btn.style.background = "var(--green)";
+  setTimeout(() => { btn.textContent = "Log Session"; btn.style.background = ""; }, 1800);
+});
+
+document.getElementById("demo-sessions-body").addEventListener("click", e => {
+  if (e.target.textContent === "Delete") e.target.closest("tr").remove();
+});
+
+// ── Achievements ───────────────────────────────────────────────────────────────
+document.getElementById("ach-load-btn").addEventListener("click", () => {
+  const sid = document.getElementById("ach-student-select").value;
+  if (!sid) return;
+  const inner = document.getElementById("ach-form-inner");
+  const preChecked = { "A. Economic__0": true, "B. Educational__3": true };
+
+  inner.innerHTML = Object.entries(ACH_GOALS).map(([cat, goals]) => `
+    <div class="ach-section">
+      <h4>${cat}</h4>
+      <div class="ach-grid">
+        ${goals.map((g, i) => `
+          <label class="ach-item">
+            <input type="checkbox" ${preChecked[`${cat}__${i}`] ? "checked" : ""} />
+            ${g.star ? `<span class="ach-star">★</span>` : ""}${g.label}
+          </label>`).join("")}
+        ${cat === "E. Other(s)" ? `<div class="form-group mt-1" style="margin:0"><input type="text" class="form-control" placeholder="Describe other goal…" /></div>` : ""}
+      </div>
+    </div>`).join("");
+
+  document.getElementById("ach-panel").style.display = "block";
+  document.getElementById("stopped-check").checked = false;
+  document.getElementById("stopped-reason-group").style.display = "none";
+});
+
+document.getElementById("stopped-check").addEventListener("change", e => {
+  document.getElementById("stopped-reason-group").style.display = e.target.checked ? "block" : "none";
+});
+
+document.getElementById("ach-save-btn").addEventListener("click", () => {
+  const btn = document.getElementById("ach-save-btn");
+  btn.textContent = "✓ Saved!";
+  btn.style.background = "#1a7a4a";
+  setTimeout(() => { btn.textContent = "Save Achievements"; btn.style.background = ""; }, 1800);
+});
+
+// ── Admin tabs ─────────────────────────────────────────────────────────────────
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn,.tab-panel").forEach(el => el.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+
+// ── Generate report ────────────────────────────────────────────────────────────
+document.getElementById("demo-gen-btn").addEventListener("click", () => {
+  const output   = document.getElementById("demo-report-output");
+  const printBtn = document.getElementById("demo-print-btn");
+  const month    = document.getElementById("demo-month-sel").value;
+  const months   = month === "Full year"
+    ? ["July","August","September","October","November","December","January","February","March","April","May","June"]
+    : [month];
+
+  // Legend
+  let html = `
+    <div class="alert alert-info" style="margin-bottom:1rem;font-size:.82rem;">
+      <strong>Key:</strong> &nbsp; Numbers = hours tutored &nbsp;·&nbsp;
+      <span class="type-pill type-ta">TA</span> Tutor Absent &nbsp;·&nbsp;
+      <span class="type-pill type-sa">SA</span> Student Absent &nbsp;·&nbsp;
+      <span class="type-pill type-h">H</span> Holiday
+    </div>
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="flex justify-between items-center" style="margin-bottom:.75rem;">
+        <h2 style="margin:0;">Tutor: Maria Lopez</h2>
+        <span class="badge badge-blue">Tutoring Site: Bloomfield Public Library</span>
+      </div>`;
+
+  Object.entries(DEMO_GRID).forEach(([student, byMonth]) => {
+    const colTotals = {};
+    months.forEach(m => colTotals[m] = 0);
+
+    html += `<div style="margin-bottom:1.5rem;">
+      <h3 style="margin-bottom:.5rem;">Student: ${student}</h3>
+      <div class="table-wrap"><table class="report-table">
+        <thead><tr><th>Day</th>${months.map(m=>`<th>${m}</th>`).join("")}<th>Total</th></tr></thead>
+        <tbody>`;
+
+    for (let d = 1; d <= 31; d++) {
+      let rowTotal = 0;
+      const cells = months.map(m => {
+        const v = byMonth[m]?.[d];
+        if (!v) return `<td></td>`;
+        const num = parseFloat(v);
+        if (!isNaN(num)) { colTotals[m] += num; rowTotal += num; return `<td>${v}</td>`; }
+        // TA / SA / H
+        const cls = v === "TA" ? "type-ta" : v === "SA" ? "type-sa" : "type-h";
+        return `<td><span class="type-pill ${cls}" style="font-size:.7rem;padding:.05rem .3rem;">${v}</span></td>`;
+      }).join("");
+      html += `<tr><td>${d}</td>${cells}<td>${rowTotal || ""}</td></tr>`;
+    }
+
+    const grand = Object.values(colTotals).reduce((a,v)=>a+v,0);
+    html += `<tr class="total-row"><td>Total</td>${months.map(m=>`<td>${colTotals[m]||""}</td>`).join("")}<td>${grand}</td></tr>`;
+    html += `</tbody></table></div></div>`;
+  });
+
+  html += `</div>
+    <p style="font-size:.8rem;color:var(--gray);margin-top:.5rem;">
+      Please consider adding extra time to all meetings, coordinating an extra session whenever possible, and regularly assigning homework (give your students credit for all completed work.)
+    </p>`;
+
+  output.innerHTML = html;
+  printBtn.style.display = "inline-flex";
+});
+
+document.getElementById("demo-print-btn").addEventListener("click", () => window.print());
+</script>
+</body>
+</html>

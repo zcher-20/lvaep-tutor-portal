@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LVAEP — My Sessions</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<nav>
+  <div class="brand">LVAEP<span>Tutor Portal</span></div>
+  <div class="nav-right">
+    <span id="nav-user"></span>
+    <a href="#" id="nav-signout">Sign out</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- Stats -->
+  <div class="page-header">
+    <h1 id="welcome-msg">Welcome</h1>
+    <p>Fiscal Year <span id="fy-label"></span> &nbsp;·&nbsp; Log your sessions below and track student progress.</p>
+  </div>
+
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><div class="stat-val" id="stat-students">—</div><div class="stat-lbl">My Students</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-sessions">—</div><div class="stat-lbl">Sessions This Year</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-hours">—</div><div class="stat-lbl">Hours This Year</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-month-hours">—</div><div class="stat-lbl">Hours This Month</div></div>
+  </div>
+
+  <!-- Log a Session -->
+  <div class="card mt-2">
+    <div class="flex items-center justify-between" style="margin-bottom:1rem;">
+      <h2 style="margin:0;">Log a Session</h2>
+    </div>
+    <form id="log-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="sess-student">Student</label>
+          <select id="sess-student" class="form-control" required>
+            <option value="">— select student —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sess-date">Date</label>
+          <input id="sess-date" type="date" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="sess-hours">Hours</label>
+          <input id="sess-hours" type="number" class="form-control" min="0.25" max="12" step="0.25" placeholder="e.g. 1.5" required />
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <button type="submit" class="btn btn-primary" id="log-btn">Log Session</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Recent Sessions -->
+  <div class="card mt-2">
+    <div class="flex items-center justify-between" style="margin-bottom:1rem;">
+      <h2 style="margin:0;">Recent Sessions</h2>
+      <div class="flex gap-1 items-center">
+        <label class="text-sm text-gray" for="filter-student">Filter:</label>
+        <select id="filter-student" class="form-control" style="width:auto;padding:.35rem .6rem;font-size:.85rem;">
+          <option value="">All students</option>
+        </select>
+        <select id="filter-month" class="form-control" style="width:auto;padding:.35rem .6rem;font-size:.85rem;">
+          <option value="">All months</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="sessions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Hours</th>
+            <th>Month (Fiscal)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="sessions-body">
+          <tr><td colspan="5"><div class="loading-full" style="min-height:4rem;"><div class="spinner" style="border-color:var(--blue);border-top-color:transparent;"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Student Achievements -->
+  <div class="card mt-2">
+    <h2>Student Achievements</h2>
+    <p class="text-sm text-gray" style="margin-bottom:1rem;">Select a student to view and update their goal achievements.</p>
+    <div class="flex gap-1 items-center mt-1" style="margin-bottom:1rem;">
+      <select id="ach-student-select" class="form-control" style="max-width:280px;">
+        <option value="">— select student —</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" id="ach-load-btn">Load</button>
+    </div>
+    <div id="ach-panel" style="display:none;">
+      <div id="ach-form-inner"></div>
+      <div class="flex gap-1 mt-2">
+        <button class="btn btn-success" id="ach-save-btn">Save Achievements</button>
+        <div id="ach-status"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay hidden" id="del-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Delete session?</h3>
+      <button class="modal-close" id="del-cancel">✕</button>
+    </div>
+    <p class="text-sm text-gray">This cannot be undone.</p>
+    <div class="flex gap-1 mt-3">
+      <button class="btn btn-danger" id="del-confirm">Delete</button>
+      <button class="btn btn-ghost" id="del-cancel2">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  requireAuth, signOut, auth,
+  getStudentsForTutor, getSessionsForTutor, logSession, deleteSession,
+  getAchievements, saveAchievements,
+  fiscalYear, fiscalMonthLabel, MONTHS, calToFiscal,
+  setNavUser, toast
+} from "./js/app.js";
+
+const ACH_GOALS = {
+  "A. Economic": ["Enter Employment","Retain Employment","Leave public assistance"],
+  "B. Educational": ["Achieve work-based project learner goal","Enter Occupational Skills Training Program","Enter Postsecondary Education","Obtain High School Diploma"],
+  "C. Family": ["Help more frequently with school","Increase contact with child(ren)'s teachers","More involvement in child(ren)'s school activities","Purchase books or magazines","Read to child(ren)","Visit the library (with/for child(ren))"],
+  "D. Societal/Community": ["Obtain citizenship","Achieve civics skills","Increase involvement in community activities","Vote or register to vote"],
+  "E. Other": []
+};
+
+let profile, students, sessions, pendingDeleteId;
+const fy = fiscalYear();
+
+// ── Boot ───────────────────────────────────────────────────────────────────────
+(async () => {
+  ({ profile } = await requireAuth(["tutor"]));
+  setNavUser(profile.name);
+  document.getElementById("welcome-msg").textContent = `Welcome, ${profile.name}`;
+  document.getElementById("fy-label").textContent = `FY${fy}`;
+
+  // Default date to today
+  document.getElementById("sess-date").value = new Date().toISOString().split("T")[0];
+
+  [students, sessions] = await Promise.all([
+    getStudentsForTutor(profile.id),
+    getSessionsForTutor(profile.id, fy)
+  ]);
+
+  populateSelects();
+  renderStats();
+  renderSessions();
+})();
+
+// ── Populate dropdowns ─────────────────────────────────────────────────────────
+function populateSelects() {
+  const opts = students.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  document.getElementById("sess-student").innerHTML = '<option value="">— select student —</option>' + opts;
+  document.getElementById("filter-student").innerHTML = '<option value="">All students</option>' + opts;
+  document.getElementById("ach-student-select").innerHTML = '<option value="">— select student —</option>' + opts;
+
+  const moOpts = MONTHS.map(m => `<option value="${m}">${m}</option>`).join("");
+  document.getElementById("filter-month").innerHTML = '<option value="">All months</option>' + moOpts;
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const now = new Date();
+  const thisMo = MONTHS[calToFiscal(now.getMonth())];
+  const monthSessions = sessions.filter(s => fiscalMonthLabel(s.date.toDate()) === thisMo);
+
+  document.getElementById("stat-students").textContent = students.length;
+  document.getElementById("stat-sessions").textContent = sessions.length;
+  document.getElementById("stat-hours").textContent    = sessions.reduce((a,s) => a + s.hours, 0).toFixed(1);
+  document.getElementById("stat-month-hours").textContent = monthSessions.reduce((a,s) => a + s.hours, 0).toFixed(1);
+}
+
+// ── Session table ──────────────────────────────────────────────────────────────
+function renderSessions() {
+  const filterStu = document.getElementById("filter-student").value;
+  const filterMo  = document.getElementById("filter-month").value;
+
+  let rows = [...sessions].reverse(); // newest first
+  if (filterStu) rows = rows.filter(s => s.studentId === filterStu);
+  if (filterMo)  rows = rows.filter(s => fiscalMonthLabel(s.date.toDate()) === filterMo);
+
+  const stuMap = Object.fromEntries(students.map(s => [s.id, s.name]));
+
+  const tbody = document.getElementById("sessions-body");
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No sessions found.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(s => {
+    const d   = s.date.toDate();
+    const dateStr = d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+    const mo  = fiscalMonthLabel(d);
+    return `<tr>
+      <td>${dateStr}</td>
+      <td>${stuMap[s.studentId] ?? "—"}</td>
+      <td><strong>${s.hours}</strong></td>
+      <td><span class="badge badge-blue">${mo}</span></td>
+      <td><button class="btn btn-ghost btn-sm del-btn" data-id="${s.id}">Delete</button></td>
+    </tr>`;
+  }).join("");
+}
+
+document.getElementById("filter-student").addEventListener("change", renderSessions);
+document.getElementById("filter-month").addEventListener("change", renderSessions);
+
+// ── Log session ────────────────────────────────────────────────────────────────
+document.getElementById("log-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("log-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const studentId = document.getElementById("sess-student").value;
+    const date      = document.getElementById("sess-date").value;
+    const hours     = document.getElementById("sess-hours").value;
+
+    await logSession({ tutorId: profile.id, studentId, date, hours });
+
+    // Reload sessions
+    sessions = await getSessionsForTutor(profile.id, fy);
+    renderStats();
+    renderSessions();
+    document.getElementById("sess-hours").value = "";
+    toast("Session logged!");
+  } catch (ex) {
+    toast("Error logging session: " + ex.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Log Session";
+  }
+});
+
+// ── Delete session ─────────────────────────────────────────────────────────────
+document.getElementById("sessions-body").addEventListener("click", (e) => {
+  if (e.target.classList.contains("del-btn")) {
+    pendingDeleteId = e.target.dataset.id;
+    document.getElementById("del-modal").classList.remove("hidden");
+  }
+});
+
+async function closeDelModal() {
+  document.getElementById("del-modal").classList.add("hidden");
+  pendingDeleteId = null;
+}
+
+document.getElementById("del-cancel").addEventListener("click", closeDelModal);
+document.getElementById("del-cancel2").addEventListener("click", closeDelModal);
+document.getElementById("del-confirm").addEventListener("click", async () => {
+  if (!pendingDeleteId) return;
+  await deleteSession(pendingDeleteId);
+  sessions = await getSessionsForTutor(profile.id, fy);
+  renderStats();
+  renderSessions();
+  closeDelModal();
+  toast("Session deleted.");
+});
+
+// ── Achievements ───────────────────────────────────────────────────────────────
+document.getElementById("ach-load-btn").addEventListener("click", async () => {
+  const sid = document.getElementById("ach-student-select").value;
+  if (!sid) return;
+  const data = await getAchievements(sid);
+  renderAchievements(data);
+  document.getElementById("ach-panel").style.display = "block";
+});
+
+function renderAchievements(data) {
+  const inner = document.getElementById("ach-form-inner");
+  inner.innerHTML = Object.entries(ACH_GOALS).map(([cat, goals]) => `
+    <div class="ach-section">
+      <h4>${cat}</h4>
+      <div class="ach-grid">
+        ${goals.map((g,i) => {
+          const key = `${cat}__${i}`;
+          return `<label class="ach-item">
+            <input type="checkbox" name="${key}" ${data[key] ? "checked" : ""} />
+            ${g}
+          </label>`;
+        }).join("")}
+        ${cat === "E. Other" ? `<div class="form-group mt-1" style="margin:0">
+          <input type="text" class="form-control" id="ach-other-text" placeholder="Describe other goal…" value="${data["other_text"] || ""}" />
+        </div>` : ""}
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("ach-save-btn").addEventListener("click", async () => {
+  const sid = document.getElementById("ach-student-select").value;
+  if (!sid) return;
+  const form = document.getElementById("ach-form-inner");
+  const data = {};
+  form.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    data[cb.name] = cb.checked;
+  });
+  const otherText = form.querySelector("#ach-other-text");
+  if (otherText) data["other_text"] = otherText.value;
+
+  await saveAchievements(sid, data);
+  toast("Achievements saved!");
+});
+
+// ── Sign out ───────────────────────────────────────────────────────────────────
+document.getElementById("nav-signout").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await signOut(auth);
+  location.href = "index.html";
+});
+</script>
+</body>
+</html>

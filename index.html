@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LVAEP — Tutor Portal Login</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="login-outer">
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>LVAEP Tutor Portal</h1>
+      <p>Literacy Volunteers of America, Essex/Passaic County</p>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:1.25rem;">Sign in</h2>
+      <div id="login-error" class="alert alert-error" style="display:none"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input id="email" type="email" class="form-control" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="login-btn">
+          Sign in
+        </button>
+      </form>
+      <p class="text-sm text-gray mt-2" style="text-align:center;">
+        Forgot your password? Contact <a href="mailto:info@lvaep.org">info@lvaep.org</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, getUserProfile } from "./js/app.js";
+
+// Redirect if already logged in
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const profile = await getUserProfile(user.uid);
+    if (profile?.role === "admin") location.href = "admin.html";
+    else if (profile?.role === "tutor") location.href = "tutor.html";
+  }
+});
+
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("login-btn");
+  const err = document.getElementById("login-error");
+  err.style.display = "none";
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Signing in…';
+
+  try {
+    const email = document.getElementById("email").value.trim();
+    const pass  = document.getElementById("password").value;
+    const cred  = await signInWithEmailAndPassword(auth, email, pass);
+    const profile = await getUserProfile(cred.user.uid);
+    if (profile?.role === "admin") location.href = "admin.html";
+    else location.href = "tutor.html";
+  } catch (ex) {
+    err.textContent = "Incorrect email or password. Please try again.";
+    err.style.display = "block";
+    btn.disabled = false;
+    btn.textContent = "Sign in";
+  }
+});
+</script>
+</body>
+</html>

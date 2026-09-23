@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LVAEP — Staff Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin: 1.5rem 0 1rem; }
+    .tab-btn { background: none; border: none; padding: .6rem 1.25rem; font-size: .9rem; font-weight: 500; cursor: pointer; color: var(--gray); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .report-day-cell { min-width: 2rem; }
+    @media print {
+      nav, .tab-bar, .no-print { display: none !important; }
+      .tab-panel { display: block !important; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">LVAEP<span>Staff Dashboard</span></div>
+  <div class="nav-right">
+    <span id="nav-user"></span>
+    <a href="#" id="nav-signout">Sign out</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>Staff Dashboard</h1>
+    <p>Manage tutors, students, and generate monthly attendance reports.</p>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="stats-row" id="admin-stats">
+    <div class="stat-card"><div class="stat-val" id="s-tutors">—</div><div class="stat-lbl">Tutors</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-students">—</div><div class="stat-lbl">Students</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-sessions">—</div><div class="stat-lbl">Sessions (FY)</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-hours">—</div><div class="stat-lbl">Total Hours (FY)</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="reports">Monthly Reports</button>
+    <button class="tab-btn" data-tab="tutors">Tutors</button>
+    <button class="tab-btn" data-tab="students">Students</button>
+  </div>
+
+  <!-- ── REPORTS TAB ────────────────────────────────────────────────────────── -->
+  <div class="tab-panel active" id="tab-reports">
+    <div class="card">
+      <h2>Generate Monthly Report</h2>
+      <div class="form-row" style="max-width:600px; margin-bottom:1rem;">
+        <div class="form-group">
+          <label>Fiscal Year</label>
+          <select id="rep-fy" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>Tutor</label>
+          <select id="rep-tutor" class="form-control">
+            <option value="">All tutors</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Month</label>
+          <select id="rep-month" class="form-control">
+            <option value="">Full year</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-1 no-print">
+        <button class="btn btn-primary" id="rep-generate-btn">Generate Report</button>
+        <button class="btn btn-ghost" id="rep-print-btn" style="display:none;">Print / Save PDF</button>
+      </div>
+    </div>
+
+    <div id="report-output" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- ── TUTORS TAB ─────────────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-tutors">
+    <div class="flex justify-between items-center" style="margin-bottom:1rem;">
+      <h2 style="margin:0;">Tutors</h2>
+      <button class="btn btn-primary no-print" id="add-tutor-btn">+ Add Tutor</button>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Students</th><th class="no-print"></th></tr></thead>
+        <tbody id="tutors-body"><tr><td colspan="4"><div class="loading-full" style="min-height:3rem;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── STUDENTS TAB ───────────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-students">
+    <div class="flex justify-between items-center" style="margin-bottom:1rem;">
+      <h2 style="margin:0;">Students</h2>
+      <button class="btn btn-primary no-print" id="add-student-btn">+ Add Student</button>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Tutor</th><th>Status</th><th class="no-print"></th></tr></thead>
+        <tbody id="students-body"><tr><td colspan="4"><div class="loading-full" style="min-height:3rem;"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Add Tutor Modal ──────────────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="modal-tutor">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="tutor-modal-title">Add Tutor</h3>
+      <button class="modal-close" id="close-tutor-modal">✕</button>
+    </div>
+    <div id="tutor-modal-error" class="alert alert-error" style="display:none;"></div>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input id="tutor-name" type="text" class="form-control" placeholder="Jane Smith" />
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input id="tutor-email" type="email" class="form-control" placeholder="jane@example.com" />
+    </div>
+    <div class="form-group" id="tutor-pass-group">
+      <label>Temporary Password</label>
+      <input id="tutor-pass" type="text" class="form-control" placeholder="Min 6 characters" />
+    </div>
+    <div class="flex gap-1 mt-2">
+      <button class="btn btn-primary" id="save-tutor-btn">Create Account</button>
+      <button class="btn btn-ghost" id="cancel-tutor-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add Student Modal ────────────────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="modal-student">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="student-modal-title">Add Student</h3>
+      <button class="modal-close" id="close-student-modal">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Student Name</label>
+      <input id="student-name" type="text" class="form-control" placeholder="Full name" />
+    </div>
+    <div class="form-group">
+      <label>Assign to Tutor</label>
+      <select id="student-tutor" class="form-control">
+        <option value="">— select —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="student-status" class="form-control">
+        <option value="active">Active</option>
+        <option value="stopped">Stopped</option>
+      </select>
+    </div>
+    <div class="flex gap-1 mt-2">
+      <button class="btn btn-primary" id="save-student-btn">Save</button>
+      <button class="btn btn-ghost" id="cancel-student-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  requireAuth, signOut, auth,
+  getAllTutors, getAllStudents, getSessionsForTutor,
+  buildReport, fiscalYear, MONTHS, calToFiscal,
+  db, collection, doc, setDoc, updateDoc, addDoc, getDocs, query, where,
+  setNavUser, toast
+} from "./js/app.js";
+
+// Firebase Auth REST API for creating users (requires admin SDK normally,
+// but we use a Cloud Function approach — for plain HTML we create users
+// via sign-in with a secondary app instance)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import firebaseConfig from "./js/firebase-config.js";
+
+let adminProfile, tutors, students, allSessions = [];
+const fy = fiscalYear();
+
+// ── Boot ───────────────────────────────────────────────────────────────────────
+(async () => {
+  ({ profile: adminProfile } = await requireAuth(["admin"]));
+  setNavUser(adminProfile.name);
+
+  [tutors, students] = await Promise.all([getAllTutors(), getAllStudents()]);
+
+  // Load all sessions for the current FY
+  await loadAllSessions();
+
+  renderStats();
+  renderTutors();
+  renderStudents();
+  populateReportSelects();
+  populateTutorDropdown();
+})();
+
+async function loadAllSessions() {
+  const promises = tutors.map(t => getSessionsForTutor(t.id, fy));
+  const results  = await Promise.all(promises);
+  allSessions = results.flat();
+}
+
+// ── Stats ──────────────────────────────────────────────────────────────────────
+function renderStats() {
+  document.getElementById("s-tutors").textContent   = tutors.length;
+  document.getElementById("s-students").textContent = students.length;
+  document.getElementById("s-sessions").textContent = allSessions.length;
+  document.getElementById("s-hours").textContent    = allSessions.reduce((a,s) => a + s.hours, 0).toFixed(1);
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn, .tab-panel").forEach(el => el.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+
+// ── Tutors table ───────────────────────────────────────────────────────────────
+function renderTutors() {
+  const stuByTutor = {};
+  students.forEach(s => { stuByTutor[s.tutorId] = (stuByTutor[s.tutorId] || 0) + 1; });
+
+  document.getElementById("tutors-body").innerHTML = tutors.length ? tutors.map(t => `
+    <tr>
+      <td><strong>${t.name}</strong></td>
+      <td>${t.email}</td>
+      <td><span class="badge badge-blue">${stuByTutor[t.id] || 0} student${stuByTutor[t.id] !== 1 ? "s" : ""}</span></td>
+      <td class="no-print"><button class="btn btn-ghost btn-sm" onclick="alert('To remove a tutor, disable their account in Firebase Console → Authentication.')">Manage</button></td>
+    </tr>`).join("") :
+    `<tr><td colspan="4"><div class="empty-state"><p>No tutors yet. Click "+ Add Tutor" to create one.</p></div></td></tr>`;
+}
+
+// ── Students table ─────────────────────────────────────────────────────────────
+function renderStudents() {
+  const tutorMap = Object.fromEntries(tutors.map(t => [t.id, t.name]));
+  document.getElementById("students-body").innerHTML = students.length ? students.map(s => `
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${tutorMap[s.tutorId] ?? "Unassigned"}</td>
+      <td><span class="badge ${s.status === "active" ? "badge-green" : "badge-red"}">${s.status ?? "active"}</span></td>
+      <td class="no-print">
+        <button class="btn btn-ghost btn-sm edit-stu-btn" data-id="${s.id}" data-name="${s.name}" data-tutor="${s.tutorId}" data-status="${s.status ?? 'active'}">Edit</button>
+      </td>
+    </tr>`).join("") :
+    `<tr><td colspan="4"><div class="empty-state"><p>No students yet.</p></div></td></tr>`;
+}
+
+document.getElementById("students-body").addEventListener("click", e => {
+  const btn = e.target.closest(".edit-stu-btn");
+  if (!btn) return;
+  openStudentModal({
+    id:     btn.dataset.id,
+    name:   btn.dataset.name,
+    tutorId:btn.dataset.tutor,
+    status: btn.dataset.status
+  });
+});
+
+// ── Report selects ─────────────────────────────────────────────────────────────
+function populateReportSelects() {
+  // Fiscal years (last 3)
+  const fyEl = document.getElementById("rep-fy");
+  for (let y = fy; y >= fy - 2; y--) {
+    const o = document.createElement("option");
+    o.value = y; o.textContent = `FY${y} (Jul ${y-1} – Jun ${y})`;
+    if (y === fy) o.selected = true;
+    fyEl.appendChild(o);
+  }
+
+  // Tutors
+  const tutorEl = document.getElementById("rep-tutor");
+  tutors.forEach(t => {
+    const o = document.createElement("option");
+    o.value = t.id; o.textContent = t.name;
+    tutorEl.appendChild(o);
+  });
+
+  // Months
+  const moEl = document.getElementById("rep-month");
+  MONTHS.forEach(m => {
+    const o = document.createElement("option");
+    o.value = m; o.textContent = m;
+    moEl.appendChild(o);
+  });
+  // Pre-select current fiscal month
+  const now = new Date();
+  moEl.value = MONTHS[calToFiscal(now.getMonth())];
+}
+
+// ── Generate report ────────────────────────────────────────────────────────────
+document.getElementById("rep-generate-btn").addEventListener("click", async () => {
+  const repFy    = parseInt(document.getElementById("rep-fy").value);
+  const tutorId  = document.getElementById("rep-tutor").value;
+  const month    = document.getElementById("rep-month").value;
+  const output   = document.getElementById("report-output");
+  const printBtn = document.getElementById("rep-print-btn");
+
+  output.innerHTML = `<div class="loading-full"><div class="spinner" style="border-color:var(--blue);border-top-color:transparent;width:2rem;height:2rem;border-width:3px;"></div><span>Loading…</span></div>`;
+
+  const targetTutors = tutorId ? tutors.filter(t => t.id === tutorId) : tutors;
+  const sessions = [];
+  for (const t of targetTutors) {
+    const s = await getSessionsForTutor(t.id, repFy);
+    sessions.push(...s.map(x => ({ ...x, _tutorName: t.name })));
+  }
+
+  const monthsToShow = month ? [month] : MONTHS;
+
+  // Group by tutor → student → sessions
+  const tutorMap = Object.fromEntries(tutors.map(t => [t.id, t.name]));
+  const stuMap   = Object.fromEntries(students.map(s => [s.id, s]));
+
+  // Build per-tutor blocks
+  const tutorIds = [...new Set(sessions.map(s => s.tutorId))];
+  if (!tutorIds.length) {
+    output.innerHTML = `<div class="card"><div class="empty-state"><p>No sessions found for the selected filters.</p></div></div>`;
+    printBtn.style.display = "none";
+    return;
+  }
+
+  let html = "";
+  for (const tid of tutorIds) {
+    const tSessions = sessions.filter(s => s.tutorId === tid);
+    const stuIds    = [...new Set(tSessions.map(s => s.studentId))];
+
+    html += `<div class="card" style="margin-bottom:1rem;page-break-inside:avoid;">
+      <div class="flex justify-between items-center" style="margin-bottom:.75rem;">
+        <h2 style="margin:0;">Tutor: ${tutorMap[tid] ?? tid}</h2>
+        <span class="badge badge-blue">${tSessions.length} session${tSessions.length !== 1 ? "s" : ""} &nbsp;·&nbsp; ${tSessions.reduce((a,s)=>a+s.hours,0).toFixed(1)} hrs</span>
+      </div>`;
+
+    for (const sid of stuIds) {
+      const stu  = stuMap[sid];
+      const name = stu?.name ?? "Unknown";
+      const sSessions = tSessions.filter(s => s.studentId === sid);
+
+      html += `<div style="margin-bottom:1.25rem;">
+        <h3 style="margin-bottom:.5rem;">Student: ${name}</h3>
+        <div class="table-wrap">
+          <table class="report-table">
+            <thead><tr><th style="min-width:40px;">Day</th>${monthsToShow.map(m=>`<th>${m}</th>`).join("")}<th>Total</th></tr></thead>
+            <tbody>`;
+
+      let colTotals = Object.fromEntries(monthsToShow.map(m => [m, 0]));
+      for (let d = 1; d <= 31; d++) {
+        const daySessions = sSessions.filter(s => s.date.toDate().getDate() === d);
+        let rowTotal = 0;
+        const cells = monthsToShow.map(m => {
+          const val = daySessions
+            .filter(s => MONTHS[calToFiscal(s.date.toDate().getMonth())] === m)
+            .reduce((a, s) => a + s.hours, 0);
+          if (val) { colTotals[m] += val; rowTotal += val; }
+          return `<td class="report-day-cell">${val || ""}</td>`;
+        }).join("");
+        html += `<tr><td>${d}</td>${cells}<td>${rowTotal || ""}</td></tr>`;
+      }
+
+      // Totals row
+      const grandTotal = Object.values(colTotals).reduce((a,v)=>a+v,0);
+      html += `<tr class="total-row"><td>Total</td>${monthsToShow.map(m=>`<td>${colTotals[m]||""}</td>`).join("")}<td>${grandTotal.toFixed(1)}</td></tr>`;
+      html += `</tbody></table></div></div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  output.innerHTML = html;
+  printBtn.style.display = "inline-flex";
+});
+
+document.getElementById("rep-print-btn").addEventListener("click", () => window.print());
+
+// ── Tutor modal ────────────────────────────────────────────────────────────────
+document.getElementById("add-tutor-btn").addEventListener("click", () => {
+  document.getElementById("tutor-name").value = "";
+  document.getElementById("tutor-email").value = "";
+  document.getElementById("tutor-pass").value = "";
+  document.getElementById("tutor-modal-error").style.display = "none";
+  document.getElementById("save-tutor-btn").textContent = "Create Account";
+  document.getElementById("modal-tutor").classList.remove("hidden");
+});
+["close-tutor-modal","cancel-tutor-btn"].forEach(id =>
+  document.getElementById(id).addEventListener("click", () =>
+    document.getElementById("modal-tutor").classList.add("hidden")));
+
+document.getElementById("save-tutor-btn").addEventListener("click", async () => {
+  const name  = document.getElementById("tutor-name").value.trim();
+  const email = document.getElementById("tutor-email").value.trim();
+  const pass  = document.getElementById("tutor-pass").value;
+  const errEl = document.getElementById("tutor-modal-error");
+  errEl.style.display = "none";
+
+  if (!name || !email || !pass) { errEl.textContent = "All fields are required."; errEl.style.display = "block"; return; }
+  if (pass.length < 6) { errEl.textContent = "Password must be at least 6 characters."; errEl.style.display = "block"; return; }
+
+  const btn = document.getElementById("save-tutor-btn");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    // Create auth user via a secondary app instance so admin stays logged in
+    const secondaryApp  = initializeApp(firebaseConfig, "secondary-" + Date.now());
+    const secondaryAuth = getAuth(secondaryApp);
+    const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+    await secondaryAuth.signOut();
+
+    await setDoc(doc(db, "users", cred.user.uid), { name, email, role: "tutor" });
+
+    tutors = await getAllTutors();
+    renderTutors();
+    populateTutorDropdown();
+    document.getElementById("modal-tutor").classList.add("hidden");
+    toast(`Tutor "${name}" created. Share their login: ${email} / ${pass}`);
+  } catch (ex) {
+    errEl.textContent = ex.message;
+    errEl.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "Create Account";
+  }
+});
+
+// ── Student modal ──────────────────────────────────────────────────────────────
+let editingStudentId = null;
+
+function populateTutorDropdown() {
+  const sel = document.getElementById("student-tutor");
+  sel.innerHTML = '<option value="">— select —</option>' +
+    tutors.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+}
+
+function openStudentModal(stu = null) {
+  editingStudentId = stu?.id ?? null;
+  document.getElementById("student-modal-title").textContent = stu ? "Edit Student" : "Add Student";
+  document.getElementById("student-name").value   = stu?.name ?? "";
+  document.getElementById("student-tutor").value  = stu?.tutorId ?? "";
+  document.getElementById("student-status").value = stu?.status ?? "active";
+  document.getElementById("modal-student").classList.remove("hidden");
+}
+
+document.getElementById("add-student-btn").addEventListener("click", () => openStudentModal());
+["close-student-modal","cancel-student-btn"].forEach(id =>
+  document.getElementById(id).addEventListener("click", () =>
+    document.getElementById("modal-student").classList.add("hidden")));
+
+document.getElementById("save-student-btn").addEventListener("click", async () => {
+  const name    = document.getElementById("student-name").value.trim();
+  const tutorId = document.getElementById("student-tutor").value;
+  const status  = document.getElementById("student-status").value;
+  if (!name || !tutorId) { toast("Name and tutor are required.", "error"); return; }
+
+  const btn = document.getElementById("save-student-btn");
+  btn.disabled = true;
+
+  try {
+    if (editingStudentId) {
+      const { updateDoc: upd, doc: docRef } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      await updateDoc(doc(db, "students", editingStudentId), { name, tutorId, status });
+    } else {
+      await addDoc(collection(db, "students"), { name, tutorId, status, createdAt: new Date() });
+    }
+    students = await getAllStudents();
+    renderStudents();
+    document.getElementById("modal-student").classList.add("hidden");
+    toast(editingStudentId ? "Student updated." : "Student added.");
+  } catch (ex) {
+    toast("Error: " + ex.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ── Sign out ───────────────────────────────────────────────────────────────────
+document.getElementById("nav-signout").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await signOut(auth);
+  location.href = "index.html";
+});
+
+// Helper import
+async function getAllStudents() {
+  const { getDocs, collection: col } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const snap = await getDocs(col(db, "students"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+async function getAllTutors() {
+  const { getDocs, collection: col, query: q, where: w } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const snap = await getDocs(q(col(db, "users"), w("role","==","tutor")));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+</script>
+</body>
+</html>
