@@ -24,18 +24,19 @@ a:hover { text-decoration: underline; }
 .page-wrap { padding: 0 2rem 4rem; }
 
 nav {
-  background: linear-gradient(135deg, #1a56a0 0%, #0f2d5e 100%);
-  color: #fff;
-  padding: .75rem 1.5rem;
+  background: #fff;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 2.25rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  position: relative;
 }
 nav .brand { font-weight: 700; font-size: 1rem; letter-spacing: .02em; }
-nav .brand span { font-weight: 400; opacity: .8; margin-left: .4rem; font-size: .85rem; }
 nav .nav-right { display: flex; align-items: center; gap: 1rem; font-size: .9rem; }
-nav .nav-right a { color: #fff; opacity: .85; }
+nav .nav-right a { color: #1a56a0; opacity: .85; }
 nav .nav-right a:hover { opacity: 1; text-decoration: none; }
 #nav-user { opacity: .75; font-size: .85rem; }
 
@@ -285,6 +286,14 @@ tbody tr:hover { background: #dbeafe; }
 .type-ta  { color: #92400e; font-weight: 700; }
 .type-sa  { color: #1e40af; font-weight: 700; }
 .type-h   { color: #065f46; font-weight: 700; }
+
+/* ── Session history table ────────────────────────────────────── */
+.sessions-table thead th {
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  border-bottom: 1px solid #d1d5db;
+}
 
 /* ── Achievements ─────────────────────────────────────────────── */
 .ach-grid { display: grid; gap: .4rem; }

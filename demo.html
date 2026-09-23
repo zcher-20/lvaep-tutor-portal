@@ -6,7 +6,7 @@
   <title>LVAEP — Demo</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .demo-banner { background:#374151; color:#fff; text-align:center; padding:.5rem; font-size:.85rem; font-weight:600; }
+    .demo-banner { background:#f3f4f6; color:#6b7280; border-bottom:1px solid #e5e7eb; text-align:center; padding:.4rem; font-size:.82rem; font-weight:500; }
     .tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border); margin:1.5rem 0 1rem; }
     .tab-btn { background:none; border:none; padding:.6rem 1.25rem; font-size:.9rem; font-weight:500; cursor:pointer; color:var(--gray); border-bottom:2px solid transparent; margin-bottom:-2px; transition:color .15s,border-color .15s; }
     .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
@@ -51,8 +51,9 @@
 
     /* Calendar */
     .cal-wrap { background:#fff; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
-    .cal-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; background:linear-gradient(135deg, #1a56a0 0%, #0f2d5e 100%); color:#fff; }
-    .cal-header button { background:rgba(255,255,255,.2); border:none; color:#fff; border-radius:4px; padding:.25rem .6rem; cursor:pointer; font-size:1rem; }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; background:#eaf2fb; color:#111827; border-bottom:1px solid #d4e6f5; }
+    .cal-header button { background:rgba(255,255,255,.6); border:none; color:#111827; border-radius:4px; padding:.25rem .6rem; cursor:pointer; font-size:1rem; }
+    .cal-header button:hover { background:rgba(255,255,255,.95); }
     .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); }
     .cal-dow { text-align:center; padding:.4rem; font-size:.75rem; font-weight:600; text-transform:uppercase; color:var(--gray); background:#f9fafb; border-bottom:1px solid var(--border); }
     .cal-day { min-height:72px; padding:.3rem .4rem; border-right:1px solid var(--border); border-bottom:1px solid var(--border); cursor:pointer; transition:background .12s; position:relative; }
@@ -113,16 +114,18 @@
 </head>
 <body>
 
-<div class="demo-banner">⚠ DEMO MODE — No data is saved.</div>
-
 <nav>
-  <div class="brand">LVAEP<span>Portal</span></div>
+  <div style="position:absolute;left:50%;transform:translateX(-50%);text-align:center;font-family:'Segoe UI',system-ui,sans-serif;">
+    <div style="font-size:1.1rem;font-weight:700;letter-spacing:.02em;color:#0f2d5e;line-height:1.2;">Literacy Volunteers of America</div>
+    <div style="font-size:.68rem;font-weight:400;color:#9ca3af;letter-spacing:.05em;text-transform:uppercase;margin-top:.15rem;">Essex/Passaic County</div>
+  </div>
+  <div></div>
   <div class="nav-right">
     <span id="nav-user"></span>
-    <select id="demo-role-switch" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:.25rem .5rem;font-size:.82rem;cursor:pointer;">
-      <option value="tutor">View as: Tutor</option>
-      <option value="admin">View as: Staff</option>
-    </select>
+    <div style="display:flex;gap:1.25rem;">
+      <button id="role-tutor-btn" onclick="setDemoRole('tutor')" style="background:none;border:none;border-bottom:2px solid #0f2d5e;cursor:pointer;font-size:.85rem;font-weight:600;color:#0f2d5e;padding:.1rem 0;transition:all .15s;">Tutor</button>
+      <button id="role-staff-btn" onclick="setDemoRole('admin')" style="background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:.85rem;font-weight:500;color:#9ca3af;padding:.1rem 0;transition:all .15s;">Staff</button>
+    </div>
   </div>
 </nav>
 
@@ -313,7 +316,7 @@
         </div>
       </div>
       <div class="table-wrap">
-        <table>
+        <table class="sessions-table">
           <thead><tr><th>Date</th><th>Student</th><th>Hours</th><th>Site</th><th>Time</th><th>Month</th><th class="no-print"></th></tr></thead>
           <tbody id="demo-sessions-body">
             <tr><td>Sep 20, 2026</td><td>Carlos Rivera</td><td>1.5</td><td>Bloomfield Library</td><td>10:00–11:30</td><td>September</td><td><button class="btn btn-ghost btn-sm">Delete</button></td></tr>
@@ -505,8 +508,14 @@ function showView(role) {
   document.getElementById("view-tutor").style.display = role === "tutor" ? "block" : "none";
   document.getElementById("view-admin").style.display = role === "admin" ? "block" : "none";
 }
-document.getElementById("demo-role-switch").addEventListener("change", e => showView(e.target.value));
-showView("tutor");
+function setDemoRole(role) {
+  showView(role);
+  const active   = "border-bottom:2px solid #0f2d5e;color:#0f2d5e;font-weight:600;";
+  const inactive = "border-bottom:2px solid transparent;color:#9ca3af;font-weight:500;";
+  document.getElementById("role-tutor-btn").style.cssText += role === "tutor" ? active : inactive;
+  document.getElementById("role-staff-btn").style.cssText += role === "admin" ? active : inactive;
+}
+setDemoRole("tutor");
 
 document.getElementById("demo-date").value = new Date().toISOString().split("T")[0];
 
@@ -818,5 +827,8 @@ document.getElementById("demo-print-btn").addEventListener("click", () => window
 // ── PDF export ─────────────────────────────────────────────────────────────────
 document.getElementById("demo-csv-btn").addEventListener("click", () => window.print());
 </script>
+
+<footer class="demo-banner no-print" style="margin-top:3rem;border-top:1px solid #e5e7eb;border-bottom:none;padding:.6rem 1rem;">⚠ DEMO MODE — No data is saved.</footer>
+
 </body>
 </html>
