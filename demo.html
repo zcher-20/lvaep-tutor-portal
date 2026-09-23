@@ -66,7 +66,7 @@
 </head>
 <body>
 
-<div class="demo-banner">⚠ DEMO MODE — No data is saved. <a href="index.html" style="color:#93c5fd;">Go to real login →</a></div>
+<div class="demo-banner">⚠ DEMO MODE — No data is saved.</div>
 
 <nav>
   <div class="brand">LVAEP<span>Portal</span></div>
@@ -494,12 +494,9 @@ document.getElementById("demo-gen-btn").addEventListener("click", () => {
 
   // Legend
   let html = `
-    <div class="alert alert-info" style="margin-bottom:1rem;font-size:.82rem;">
-      <strong>Key:</strong> &nbsp; Numbers = hours tutored &nbsp;·&nbsp;
-      <span class="type-pill type-ta">TA</span> Tutor Absent &nbsp;·&nbsp;
-      <span class="type-pill type-sa">SA</span> Student Absent &nbsp;·&nbsp;
-      <span class="type-pill type-h">H</span> Holiday
-    </div>
+    <p style="font-size:.82rem;color:var(--gray);margin-bottom:1rem;">
+      <strong style="color:#374151;">Key:</strong> &nbsp; Numbers = hours tutored &nbsp;·&nbsp; TA = Tutor Absent &nbsp;·&nbsp; SA = Student Absent &nbsp;·&nbsp; H = Holiday
+    </p>
     <div class="card" style="margin-bottom:1rem;">
       <div class="flex justify-between items-center" style="margin-bottom:.75rem;">
         <h2 style="margin:0;">Tutor: Maria Lopez</h2>
